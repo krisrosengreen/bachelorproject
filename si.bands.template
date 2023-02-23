@@ -1,0 +1,23 @@
+ &control
+   calculation='bands'
+   prefix='silicon',
+   pseudo_dir = 'pseudo/',
+   outdir =  'tmp/',
+ /
+ &system    
+    ibrav=  2, celldm(1) =10.7, nat=  2, ntyp= 1,
+    ecutwfc = 20.0, 
+    nbnd = 8
+ /
+ &electrons
+ /
+ATOMIC_SPECIES
+ Si  28.086  Si.pz-vbc.UPF
+ATOMIC_POSITIONS alat
+ Si 0.00 0.00 0.00 
+ Si 0.25 0.25 0.25 
+K_POINTS tpiba
+#  tpiba = k-points in units of 2pi/a
+#  number of k-points
+ 36
+#  kx, ky, kz, wk  (wk=symmetry weight is ignored in bands calculations)
