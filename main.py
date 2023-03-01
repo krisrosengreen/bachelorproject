@@ -1,8 +1,10 @@
 from copy import deepcopy
+from subprocess import check_output
 import os
 import matplotlib.pyplot as plt
 from matplotlib import rcParamsDefault
 import numpy as np
+from plot_energy import create_band_image
 
 plt.rcParams["figure.dpi"]=150
 plt.rcParams["figure.facecolor"]="white"
@@ -12,8 +14,10 @@ TEMPLATE = "si.bands.template"
 FILENAME = "si.bandspy.in"
 FILEOUTPUT = "si.bandspy.out"
 
+
 def format_row(row, row_num) -> str:
-    return f"   {row[0]} {row[1]} {row[2]} {row_num: >2}\n"
+    return f"   {row[0]} {row[1]} {row[2]} {row_num: >3}\n"
+
 
 def create_file(matrix):
     string_builer = ""
@@ -26,6 +30,7 @@ def create_file(matrix):
 
     with open(FILENAME, 'w') as f:
         f.write(string_builer)
+
 
 def create_image(output_name):
     # load data
@@ -42,12 +47,24 @@ def create_image(output_name):
     plt.clf()
     plt.cla()
 
+
 def copy_dat_file(output_name):
     os.system(f"cp si_bands.dat datfiles/{output_name}")
 
+
+def check_success(espresso_output):
+    if "JOB DONE" in espresso_output:
+        print(" * Complete calculation part")
+    else:
+        print(" ! Not completed!")
+
+
 def calculate_energies():
-    os.system("pw.x -i si.bandspy.in")
-    os.system("bands.x < si_bands_pp.in > si_bands_pp_py.out ")
+    outp1 = os.popen("pw.x -i si.bandspy.in")
+    check_success(outp1.read())
+    outp2 = os.popen("bands.x < si_bands_pp.in")
+    check_success(outp2.read())
+
 
 def left_column_values_generate():
     M_template = [[0.5, 0.5, 0.5],
@@ -98,8 +115,28 @@ def left_column_values_generate():
 
         create_file(M)
         calculate_energies()
-        create_image(f"image{i+1}.png")
+        create_band_image("si_bands.dat.gnu", f"image{i+1}.png")
         copy_dat_file(f"dat_file{i+1}.dat")
 
+
+def grid():
+    for i in range(10):
+        grid = []
+
+        for j in range(10):
+            for k in range(10):
+                kx = i*0.1
+                ky = j*0.1
+                kz = k*0.1
+
+                grid.append([kx, ky, kz])
+
+        create_file(grid)
+        calculate_energies()
+        create_band_image("si_bands.dat.gnu", f"images/image_kx_{i}_10.png")
+        copy_dat_file(f"kx_{i}_10.dat")
+
+
 if __name__ == "__main__":
-    left_column_values_generate()
+    # left_column_values_generate()
+    grid()
