@@ -19,5 +19,3 @@ ATOMIC_POSITIONS alat
 K_POINTS tpiba
 #  tpiba = k-points in units of 2pi/a
 #  number of k-points
- 36
-#  kx, ky, kz, wk  (wk=symmetry weight is ignored in bands calculations)
