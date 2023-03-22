@@ -15,6 +15,9 @@ TEMPLATE = "si.bands.template"
 FILENAME = "si.bandspy.in"
 FILEOUTPUT = "si.bandspy.out"
 
+PP_FILENAME = "si_bands_pp.in"
+PP_FILEOUTPUT = "si_bands_pp.out"
+
 FORMATTING_DECIMALS = 4
 
 
@@ -64,7 +67,7 @@ def check_success(espresso_output) -> bool:
 
 def calculate_energies() -> bool:  # Returns True if successful
     outp1 = os.popen(f"pw.x -i {FILENAME} > {FILEOUTPUT}; cat {FILEOUTPUT}")
-    outp2 = os.popen("bands.x < si_bands_pp.in > si_bands_pp.out; cat si_bands_pp.out")
+    outp2 = os.popen("bands.x < {PP_FILENAME} > {PP_FILEOUTPUT}; cat {PP_FILEOUTPUT}")
 
     check1 = check_success(outp1.read())
     check2 = check_success(outp2.read())
@@ -94,17 +97,41 @@ def grid():
                 grid.append([kx, ky, kz])
 
             create_file(grid)
+            yield (i, j)
 
-            calculation_success = calculate_energies()
-            if calculation_success:
-                print(f"\rProgress: [{i*kx_max + j}/{kx_max*ky_max}]", end="")
 
-            create_band_image("si_bands.dat.gnu", f"images/image_{i}_{j}_{k}.png")
-            copy_dat_file(f"kx_{i}_{j}_{k}.dat")
+def create_grid():
+    g = grid()
+    created = 1
+    while ret := next(g, None):
+        (i,j)=ret
+        print(f"\rCurrent [{i}, {j}]", end='')
+        calculation_success = calculate_energies()
+        create_band_image("si_bands.dat.gnu", f"images/image_{i}_{j}.png")
+        copy_dat_file(f"kx_{i}_{j}.dat")
     print("\nDone!")
+
+
+def check_convergence():
+    for ecutwfc in [5,10,15,20]:
+        g = grid()
+        (i,j) = next(g)
+
+        with open(FILENAME, 'r') as f:
+            lines = f.readlines()
+
+        lines[8] = f"    ecutwfc = {ecutwfc}\n"
+
+        with open(FILENAME, 'w') as f:
+            f.writelines(lines)
+
+        calculate_energies()
+
+        exit()
 
 
 if __name__ == "__main__":
     # left_column_values_generate()
-    grid()
+    create_grid()
+    # check_convergence()
     # create_file([[1,2,3],[4,5,6],[7,8,9]])
