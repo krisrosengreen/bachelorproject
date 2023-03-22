@@ -1,11 +1,12 @@
 from copy import deepcopy
 from subprocess import check_output
-import os
-import matplotlib.pyplot as plt
 from matplotlib import rcParamsDefault
-import numpy as np
 from plot_energy import create_band_image
 from qeoutput import check_eigenvalues
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import re
 
 plt.rcParams["figure.dpi"]=150
 plt.rcParams["figure.facecolor"]="white"
@@ -67,7 +68,7 @@ def check_success(espresso_output) -> bool:
 
 def calculate_energies() -> bool:  # Returns True if successful
     outp1 = os.popen(f"pw.x -i {FILENAME} > {FILEOUTPUT}; cat {FILEOUTPUT}")
-    outp2 = os.popen("bands.x < {PP_FILENAME} > {PP_FILEOUTPUT}; cat {PP_FILEOUTPUT}")
+    outp2 = os.popen(f"bands.x < {PP_FILENAME} > {PP_FILEOUTPUT}; cat {PP_FILEOUTPUT}")
 
     check1 = check_success(outp1.read())
     check2 = check_success(outp2.read())
@@ -113,7 +114,11 @@ def create_grid():
 
 
 def check_convergence():
-    for ecutwfc in [5,10,15,20]:
+
+    ecutwfcs = [5,10,15,20]
+    energies = []
+
+    for ecutwfc in ecutwfcs:
         g = grid()
         (i,j) = next(g)
 
@@ -127,11 +132,21 @@ def check_convergence():
 
         calculate_energies()
 
-        exit()
+        # Get total energy
 
+        str_energy_line = os.popen(f"grep ! {FILEOUTPUT}").read()
+
+        energy_str = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', str_energy_line)[0]
+
+        energy = float(energy_str)
+
+        energies.append(energy)
+
+    plt.plot(ecutwfcs, energies)
+    plt.show()
 
 if __name__ == "__main__":
     # left_column_values_generate()
-    create_grid()
-    # check_convergence()
+    # create_grid()
+    check_convergence()
     # create_file([[1,2,3],[4,5,6],[7,8,9]])
