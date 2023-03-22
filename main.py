@@ -15,24 +15,27 @@ TEMPLATE = "si.bands.template"
 FILENAME = "si.bandspy.in"
 FILEOUTPUT = "si.bandspy.out"
 
+FORMATTING_DECIMALS = 4
+
 
 def format_row(row, row_num) -> str:
-    return f"   {row[0]:.1f} {row[1]:.1f} {row[2]:.1f} {row_num: >3}\n"
+    FD = FORMATTING_DECIMALS
+    return f"   {row[0]:.{FD}f} {row[1]:.{FD}f} {row[2]:.{FD}f} {row_num: >3}\n"
 
 
 def create_file(matrix):
-    string_builer = ""
+    string_builder = ""
 
     with open(TEMPLATE, "r") as f:
-        string_builer = f.read() + "\n"
+        string_builder = f.read() + "\n"
 
-    string_builer = string_builer + f"   {len(matrix)}\n"
+    string_builder += f"   {len(matrix)}\n"
 
     for c, row in enumerate(matrix):
-        string_builer += format_row(row, c)
+        string_builder += format_row(row, c)
 
     with open(FILENAME, 'w') as f:
-        f.write(string_builer)
+        f.write(string_builder)
 
 
 def create_image(output_name):
@@ -60,7 +63,7 @@ def check_success(espresso_output) -> bool:
 
 
 def calculate_energies() -> bool:  # Returns True if successful
-    outp1 = os.popen("pw.x -i si.bandspy.in")
+    outp1 = os.popen(f"pw.x -i {FILENAME} > {FILEOUTPUT}; cat {FILEOUTPUT}")
     outp2 = os.popen("bands.x < si_bands_pp.in > si_bands_pp.out; cat si_bands_pp.out")
 
     check1 = check_success(outp1.read())
@@ -70,77 +73,28 @@ def calculate_energies() -> bool:  # Returns True if successful
     return check1 and check2 and check3  # Check if all were successful
 
 
-def left_column_values_generate():
-    M_template = [[0.5, 0.5, 0.5],
-         [0.4, 0.4, 0.4],
-         [0.3, 0.3, 0.3],
-         [0.2, 0.2, 0.2],
-         [0.1, 0.1, 0.1],
-         [0.0, 0.0, 0.0]]
-
-    variational_template = [[0.0, 0.0, 0.1],
-                   [0.0, 0.0, 0.2],
-                   [0.0, 0.0, 0.3],
-                   [0.0, 0.0, 0.4],
-                   [0.0, 0.0, 0.5],
-                   [0.0, 0.0, 0.6],
-                   [0.0, 0.0, 0.7],
-                   [0.0, 0.0, 0.8],
-                   [0.0, 0.0, 0.9],
-                   [0.0, 0.0, 1.0],
-                   [0.0, 0.1, 1.0],
-                   [0.0, 0.2, 1.0],
-                   [0.0, 0.3, 1.0],
-                   [0.0, 0.4, 1.0],
-                   [0.0, 0.5, 1.0],
-                   [0.0, 0.6, 1.0],
-                   [0.0, 0.7, 1.0],
-                   [0.0, 0.8, 1.0],
-                   [0.0, 0.9, 1.0],
-                   [0.0, 1.0, 1.0],
-                   [0.0, 0.9, 0.9],
-                   [0.0, 0.8, 0.8],
-                   [0.0, 0.7, 0.7],
-                   [0.0, 0.6, 0.6],
-                   [0.0, 0.5, 0.5],
-                   [0.0, 0.4, 0.4],
-                   [0.0, 0.3, 0.3],
-                   [0.0, 0.2, 0.2],
-                   [0.0, 0.1, 0.1],
-                   [0.0, 0.0, 0.0]]
-
-    for i in range(9):
-        M = deepcopy(M_template)
-        variational = deepcopy(variational_template)
-
-        for c, row in enumerate(variational):
-            row[0] = 0.1*i
-            M.append(row)
-
-        create_file(M)
-        calculate_energies()
-        create_band_image("si_bands.dat.gnu", f"image{i+1}.png")
-        copy_dat_file(f"dat_file{i+1}.dat")
-
-
 def grid():
-
     kx_max = 10
     ky_max = 10
-    kz_max = 10
+    kz_max = 101
+
+    start = 0
+    step = 2
+    mult = 0.01
 
     for i in range(kx_max):
         for j in range(ky_max):
 
             grid = []
-            for k in range(kz_max):
+            for k in range(start, kz_max, step):
                 kx = i*0.1
                 ky = j*0.1
-                kz = k*0.1
+                kz = k*mult
 
                 grid.append([kx, ky, kz])
 
             create_file(grid)
+
             calculation_success = calculate_energies()
             if calculation_success:
                 print(f"\rProgress: [{i*kx_max + j}/{kx_max*ky_max}]", end="")
