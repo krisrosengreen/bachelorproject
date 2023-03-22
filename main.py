@@ -21,6 +21,8 @@ PP_FILEOUTPUT = "si_bands_pp.out"
 
 FORMATTING_DECIMALS = 4
 
+EPSILON_CONVERGENCE = 0.1
+
 
 def format_row(row, row_num) -> str:
     FD = FORMATTING_DECIMALS
@@ -115,35 +117,42 @@ def create_grid():
 
 def check_convergence():
 
-    ecutwfcs = [5,10,15,20]
-    energies = []
+    ecutwfcs = [5,10,15,20,25,30,35,40]
 
-    for ecutwfc in ecutwfcs:
-        g = grid()
-        (i,j) = next(g)
+    g = grid()
+    while (kpair := next(g, None)):
+        (i,j) = kpair
 
-        with open(FILENAME, 'r') as f:
-            lines = f.readlines()
+        energies = []
+        for ecutwfc in ecutwfcs:
 
-        lines[8] = f"    ecutwfc = {ecutwfc}\n"
+            with open(FILENAME, 'r') as f:
+                lines = f.readlines()
 
-        with open(FILENAME, 'w') as f:
-            f.writelines(lines)
+            lines[8] = f"    ecutwfc = {ecutwfc}\n"
 
-        calculate_energies()
+            with open(FILENAME, 'w') as f:
+                f.writelines(lines)
 
-        # Get total energy
+            calculate_energies()
 
-        str_energy_line = os.popen(f"grep ! {FILEOUTPUT}").read()
+            # Get total energy
 
-        energy_str = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', str_energy_line)[0]
+            str_energy_line = os.popen(f"grep ! {FILEOUTPUT}").read()
 
-        energy = float(energy_str)
+            energy_str = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', str_energy_line)[0]
 
-        energies.append(energy)
+            energy = float(energy_str)
 
-    plt.plot(ecutwfcs, energies)
-    plt.show()
+            energies.append(energy)
+
+            print(f"\rConvergence testing k-pair (i={i}, j={j}) - E={energy}... ", end='')
+
+        if abs(energies[-1] - energies[-2]) < EPSILON_CONVERGENCE:
+            print("  Converged!")
+        else:
+            print("  Not converged!")
+
 
 if __name__ == "__main__":
     # left_column_values_generate()
