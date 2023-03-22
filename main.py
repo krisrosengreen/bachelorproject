@@ -21,7 +21,7 @@ PP_FILEOUTPUT = "si_bands_pp.out"
 
 FORMATTING_DECIMALS = 4
 
-EPSILON_CONVERGENCE = 0.1
+EPSILON_CONVERGENCE = 0.05
 
 
 def format_row(row, row_num) -> str:
@@ -117,7 +117,7 @@ def create_grid():
 
 def check_convergence():
 
-    ecutwfcs = [5,10,15,20,25,30,35,40]
+    ecutwfcs = [5,10,15,20,25,30,35,40,45,50,55,60]
 
     g = grid()
     while (kpair := next(g, None)):
@@ -147,6 +147,10 @@ def check_convergence():
             energies.append(energy)
 
             print(f"\rConvergence testing k-pair (i={i}, j={j}) - E={energy}... ", end='')
+
+            if len(energies) >= 2:
+                if abs(energies[-1] - energies[-2]) < EPSILON_CONVERGENCE:
+                    break
 
         if abs(energies[-1] - energies[-2]) < EPSILON_CONVERGENCE:
             print("  Converged!")
