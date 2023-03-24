@@ -1,4 +1,4 @@
 clean:
-	rm images/*.png
-	rm datfiles/*.dat
-	rm gnufiles/*.gnu
+	rm qefiles/images/*.png
+	rm qefiles/datfiles/*.dat
+	rm qefiles/gnufiles/*.gnu

@@ -1,14 +1,14 @@
+from plot_energy import *
+from qe import *
 from copy import deepcopy
 from subprocess import check_output
 from matplotlib import rcParamsDefault
-from plot_energy import create_band_image
-from plot_energy import find_intersections
-from qeoutput import check_eigenvalues
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import re
+
 
 plt.rcParams["figure.dpi"]=150
 plt.rcParams["figure.facecolor"]="white"
@@ -21,12 +21,14 @@ FILEOUTPUT = "si.bandspy.out"
 PP_FILENAME = "si_bands_pp.in"
 PP_FILEOUTPUT = "si_bands_pp.out"
 
+BANDS_GNUFILE = "si_bands.dat.gnu"
+
 FORMATTING_DECIMALS = 4
 
 EPSILON_CONVERGENCE = 0.05
 
 
-def format_row(row, row_num) -> str:
+def inputfile_row_format(row, row_num) -> str:
     FD = FORMATTING_DECIMALS
     return f"   {row[0]:.{FD}f} {row[1]:.{FD}f} {row[2]:.{FD}f} {row_num: >3}\n"
 
@@ -40,7 +42,7 @@ def create_file(matrix):
     string_builder += f"   {len(matrix)}\n"
 
     for c, row in enumerate(matrix):
-        string_builder += format_row(row, c)
+        string_builder += inputfile_row_format(row, c)
 
     with open(FILENAME, 'w') as f:
         f.write(string_builder)
@@ -48,7 +50,7 @@ def create_file(matrix):
 
 def create_image(output_name):
     # load data
-    data = np.loadtxt('si_bands.dat.gnu')
+    data = np.loadtxt(BANDS_GNUFILE)
 
     k = np.unique(data[:, 0])
     bands = np.reshape(data[:, 1], (-1, len(k)))
@@ -64,22 +66,7 @@ def create_image(output_name):
 
 def copy_dat_file(output_name):
     os.system(f"cp si_bands.dat datfiles/{output_name}")
-    os.system(f"cp si_bands.dat.gnu gnufiles/{output_name}")
-
-
-def check_success(espresso_output) -> bool:
-    return "JOB DONE" in espresso_output
-
-
-def calculate_energies() -> bool:  # Returns True if successful
-    outp1 = os.popen(f"pw.x -i {FILENAME} > {FILEOUTPUT}; cat {FILEOUTPUT}")
-    outp2 = os.popen(f"bands.x < {PP_FILENAME} > {PP_FILEOUTPUT}; cat {PP_FILEOUTPUT}")
-
-    check1 = check_success(outp1.read())
-    check2 = check_success(outp2.read())
-    check3 = check_eigenvalues("si_bands_pp.out")
-
-    return check1 and check2 and check3  # Check if all were successful
+    os.system(f"cp {BANDS_GNUFILE} gnufiles/{output_name}")
 
 
 def grid():
@@ -113,44 +100,31 @@ def create_grid():
         (i,j)=ret
         print(f"\rCurrent [{i}, {j}]", end='')
         calculation_success = calculate_energies()
-        create_band_image("si_bands.dat.gnu", f"images/image_{i}_{j}.png")
+        create_band_image(BANDS_GNUFILE, f"images/image_{i}_{j}.png")
         copy_dat_file(f"kx_{i}_ky_{j}.dat")
     print("\nDone!")
 
 
 def check_convergence():
-
     ecutwfcs = [5,10,15,20,25,30,35,40,45,50,55,60]
-
     g = grid()
     while (kpair := next(g, None)):
         (i,j) = kpair
-
         energies = []
         for ecutwfc in ecutwfcs:
-
             with open(FILENAME, 'r') as f:
                 lines = f.readlines()
-
             lines[8] = f"    ecutwfc = {ecutwfc}\n"
-
             with open(FILENAME, 'w') as f:
                 f.writelines(lines)
-
             calculate_energies()
 
             # Get total energy
-
             str_energy_line = os.popen(f"grep ! {FILEOUTPUT}").read()
-
             energy_str = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', str_energy_line)[0]
-
             energy = float(energy_str)
-
             energies.append(energy)
-
             print(f"\rConvergence testing k-pair (i={i}, j={j}) - E={energy}... ", end='')
-
             if len(energies) >= 2:
                 if abs(energies[-1] - energies[-2]) < EPSILON_CONVERGENCE:
                     break
@@ -183,6 +157,8 @@ def plot_3d_intersects():
 
 
 if __name__ == "__main__":
+    os.chdir("qefiles/")
+
     # left_column_values_generate()
     # create_grid()
     # check_convergence()

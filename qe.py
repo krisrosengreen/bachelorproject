@@ -53,5 +53,21 @@ def check_eigenvalues(filename) -> bool:  # There has to be 8 eigenvalues
                 current = 0
     return not bad_value
 
+
+def check_success(espresso_output) -> bool:
+    return "JOB DONE" in espresso_output
+
+
+def calculate_energies() -> bool:  # Returns True if successful
+    outp1 = os.popen(f"pw.x -i {FILENAME} > {FILEOUTPUT}; cat {FILEOUTPUT}")
+    outp2 = os.popen(f"bands.x < {PP_FILENAME} > {PP_FILEOUTPUT}; cat {PP_FILEOUTPUT}")
+
+    check1 = check_success(outp1.read())
+    check2 = check_success(outp2.read())
+    check3 = check_eigenvalues("si_bands_pp.out")
+
+    return check1 and check2 and check3  # Check if all were successful
+
+
 if __name__ == "__main__":
     check_eigenvalues("si_bands_pp_py.out")

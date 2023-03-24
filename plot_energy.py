@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import re
+import os
+
 
 def create_band_image(filename, output):
     with open(filename) as f:
@@ -85,4 +87,6 @@ def plot_bands_and_intersections(filename):
     plt.show()
 
 if __name__ == "__main__":
+    os.chdir("qefiles/")
+
     plot_bands_and_intersections("si_bands.dat.gnu")
