@@ -2,7 +2,9 @@ from copy import deepcopy
 from subprocess import check_output
 from matplotlib import rcParamsDefault
 from plot_energy import create_band_image
+from plot_energy import find_intersections
 from qeoutput import check_eigenvalues
+from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -62,6 +64,7 @@ def create_image(output_name):
 
 def copy_dat_file(output_name):
     os.system(f"cp si_bands.dat datfiles/{output_name}")
+    os.system(f"cp si_bands.dat.gnu gnufiles/{output_name}")
 
 
 def check_success(espresso_output) -> bool:
@@ -111,7 +114,7 @@ def create_grid():
         print(f"\rCurrent [{i}, {j}]", end='')
         calculation_success = calculate_energies()
         create_band_image("si_bands.dat.gnu", f"images/image_{i}_{j}.png")
-        copy_dat_file(f"kx_{i}_{j}.dat")
+        copy_dat_file(f"kx_{i}_ky_{j}.dat")
     print("\nDone!")
 
 
@@ -158,8 +161,30 @@ def check_convergence():
             print("  Not converged!")
 
 
+def plot_3d_intersects():
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+
+    xdata = []
+    ydata = []
+    zdata = []
+
+    for i in range(10):
+        for j in range(10):
+            intersections = find_intersections(f"gnufiles/kx_{i}_ky_{j}.dat")
+
+            if len(intersections) != 0:
+                xdata.append(i)
+                ydata.append(j)
+                zdata.append(intersections[0][0])
+
+    ax.scatter3D(xdata, ydata, zdata)
+    plt.show()
+
+
 if __name__ == "__main__":
     # left_column_values_generate()
     # create_grid()
-    check_convergence()
+    # check_convergence()
     # create_file([[1,2,3],[4,5,6],[7,8,9]])
+    plot_3d_intersects()
