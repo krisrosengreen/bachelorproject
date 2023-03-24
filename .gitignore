@@ -2,3 +2,4 @@ datfiles/*.dat
 images/*.png
 __pycache__/*
 qefiles/__pycache__/*
+qefiles/tmp/*
