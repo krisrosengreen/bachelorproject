@@ -1,4 +1,4 @@
-from plot_energy import *
+from energy import *
 from qe import *
 from copy import deepcopy
 from subprocess import check_output
@@ -66,10 +66,10 @@ def create_image(output_name):
 
 def copy_dat_file(output_name):
     os.system(f"cp si_bands.dat datfiles/{output_name}")
-    os.system(f"cp {BANDS_GNUFILE} gnufiles/{output_name}")
+    os.system(f"cp {BANDS_GNUFILE} gnufiles/{output_name}.gnu")
 
 
-def grid():
+def generate_grid():
     kx_max = 10
     ky_max = 10
     kz_max = 101
@@ -94,7 +94,7 @@ def grid():
 
 
 def create_grid():
-    g = grid()
+    g = generate_grid()
     created = 1
     while ret := next(g, None):
         (i,j)=ret
@@ -107,8 +107,8 @@ def create_grid():
 
 def check_convergence():
     ecutwfcs = [5,10,15,20,25,30,35,40,45,50,55,60]
-    g = grid()
-    while (kpair := next(g, None)):
+    g = generate_grid()
+    while kpair := next(g, None):
         (i,j) = kpair
         energies = []
         for ecutwfc in ecutwfcs:
@@ -143,14 +143,19 @@ def plot_3d_intersects():
     ydata = []
     zdata = []
 
-    for i in range(10):
-        for j in range(10):
-            intersections = find_intersections(f"gnufiles/kx_{i}_ky_{j}.dat")
+    gnu_files = os.listdir("gnufiles")
 
-            if len(intersections) != 0:
-                xdata.append(i)
-                ydata.append(j)
-                zdata.append(intersections[0][0])
+    for gnu_file in gnu_files:
+        splitted = gnu_file.split('.')[0].split("_")
+        kx = int(splitted[1])
+        ky = int(splitted[3])
+
+        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=4, emax=5.5)
+
+        for intersection in intersections:
+            xdata.append(kx)
+            ydata.append(ky)
+            zdata.append(intersection[0])
 
     ax.scatter3D(xdata, ydata, zdata)
     plt.show()

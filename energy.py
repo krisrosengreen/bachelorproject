@@ -45,19 +45,21 @@ def read_dat_file(filename):
 def find_intersections(filename, epsilon=0.1, emin=1, emax=3):
     epsilon = 0.1
 
-    bands = read_dat_file(filename)
+    bands = np.array(read_dat_file(filename))
 
     points_intersect = []
 
     for band1 in bands:
+
         for band2 in bands:
-            if band1 == band2:
+            if np.array_equal(band1, band2):
                 continue
 
-            for i in range(len(band1)):
-                if (e1 := band1[i][1]) >= emin and e1 <= emax and (e2 := band2[i][1]) >= emin and e2 <= emax:
-                    if abs(band1[i][1] - band2[i][1]) < epsilon:
-                        points_intersect.append(band1[i])
+            idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
+
+            for idx in idxs:
+                if emin <= (yval := band1[idx][1]) and yval <= emax:
+                    points_intersect.append(band1[idx])
 
     return points_intersect
 
