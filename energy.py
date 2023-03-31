@@ -43,8 +43,6 @@ def read_dat_file(filename):
 
 
 def find_intersections(filename, epsilon=0.1, emin=1, emax=3):
-    epsilon = 0.1
-
     bands = np.array(read_dat_file(filename))
 
     points_intersect = []
@@ -61,6 +59,21 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3):
             for idx in idxs:
                 if emin <= (yval := band1[idx][1]) and yval <= emax:
                     points_intersect.append(band1[idx])
+
+    return points_intersect
+
+def within_energy(filename, energy, epsilon=0.1):
+    bands = np.array(read_dat_file(filename))
+
+    points_intersect = []
+
+    for band1 in bands:
+
+        # idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
+        idxs = np.where(np.abs(band1[:, 1] - energy) < epsilon)[0]
+
+        for idx in idxs:
+            points_intersect.append(band1[idx])
 
     return points_intersect
 

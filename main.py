@@ -130,7 +130,7 @@ def check_convergence():
             print("  Not converged!")
 
 
-def plot_3d_intersects(emin=4.2, emax=5.2, epsilon=0.01):
+def plot_3d_intersects(emin=5.1, emax=5.19, epsilon=0.01):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
@@ -146,8 +146,6 @@ def plot_3d_intersects(emin=4.2, emax=5.2, epsilon=0.01):
         kx = float(splitted_no_fextension[1])
         ky = float(splitted_no_fextension[3])
 
-        print(gnu_file, kx, ky)
-
         intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon)
 
         for intersection in intersections:
@@ -158,6 +156,32 @@ def plot_3d_intersects(emin=4.2, emax=5.2, epsilon=0.01):
     ax.scatter3D(xdata, ydata, zdata)
     plt.show()
 
+
+def plot_3d_energy(energy, epsilon=0.01):
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+
+    xdata = []
+    ydata = []
+    zdata = []
+
+    gnu_files = os.listdir("gnufiles")
+
+    for gnu_file in gnu_files:
+        splitted_no_fextension = ".".join(gnu_file.split('.')[:-2]).split("_")
+
+        kx = float(splitted_no_fextension[1])
+        ky = float(splitted_no_fextension[3])
+
+        intersections = within_energy(f"gnufiles/" + gnu_file)
+
+        for intersection in intersections:
+            xdata.append(kx)
+            ydata.append(ky)
+            zdata.append(intersection[0])
+
+    ax.scatter3D(xdata, ydata, zdata)
+    plt.show()
 
 def valence_maximum():  # Should lie in Gamma - L direction
     # First create grid from (0,0,0) to (0.5, 0.5, 0.5)
