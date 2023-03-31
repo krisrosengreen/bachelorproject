@@ -91,7 +91,6 @@ def generate_grid():
 
 def create_grid():
     g = generate_grid()
-    created = 1
     while ret := next(g, None):
         (i,j)=ret
         print(f"\rCurrent [{i:.4f}, {j:.4f}]", end='')
@@ -131,7 +130,7 @@ def check_convergence():
             print("  Not converged!")
 
 
-def plot_3d_intersects():
+def plot_3d_intersects(emin=4.2, emax=5.2, epsilon=0.01):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
@@ -149,7 +148,7 @@ def plot_3d_intersects():
 
         print(gnu_file, kx, ky)
 
-        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=3, emax=5, epsilon=0.01)
+        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon)
 
         for intersection in intersections:
             xdata.append(kx)
@@ -159,21 +158,32 @@ def plot_3d_intersects():
     ax.scatter3D(xdata, ydata, zdata)
     plt.show()
 
+
 def valence_maximum():  # Should lie in Gamma - L direction
     # First create grid from (0,0,0) to (0.5, 0.5, 0.5)
     num_points = 20
-
     grid = np.ones((20, 3)) * np.linspace(0, 0.5, num_points)[np.newaxis].T
     create_file(grid)
-    calculate_energies()
+    success = calculate_energies()
 
+    # Plot bands and get the band with valence maximum and corresponding max value
+    bands = get_bands(BANDS_GNUFILE)
+    for c, band in enumerate(bands):
+        col = "r"
+        if c == 3:
+            col = "g"
+            valence_maximum = np.max(band[:, 1])
+            print("Valence max: ", valence_maximum)
+        plt.plot(band[:, 0], band[:, 1], c=col)
+    plt.show()
 
 
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
     # left_column_values_generate()
-    create_grid()
+    # create_grid()
     # check_convergence()
     # create_file([[1,2,3],[4,5,6],[7,8,9]])
-    # plot_3d_intersects()
+    plot_3d_intersects()
+    # valence_maximum()

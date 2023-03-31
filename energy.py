@@ -64,6 +64,25 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3):
 
     return points_intersect
 
+def get_bands(filename):
+    with open(filename) as f:
+        bands_data = f.read()
+
+    txt_bands = bands_data.strip().split("\n\n")
+    floatify = lambda L: [float(L[0]), float(L[1])]
+
+    bands = []
+
+    for txt_band in txt_bands:
+        lines = txt_band.split("\n")
+
+        xy_data = list(map(lambda s: floatify(s.strip().split()), lines))
+
+        xy_data_np = np.array(xy_data)
+        bands.append(xy_data_np)
+
+    return bands
+
 def plot_bands_and_intersections(filename):
     with open(filename) as f:
         bands_data = f.read()
