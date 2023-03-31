@@ -173,7 +173,7 @@ def plot_3d_energy(energy, epsilon=0.01):
         kx = float(splitted_no_fextension[1])
         ky = float(splitted_no_fextension[3])
 
-        intersections = within_energy(f"gnufiles/" + gnu_file)
+        intersections = within_energy(f"gnufiles/" + gnu_file, energy)
 
         for intersection in intersections:
             xdata.append(kx)
@@ -205,9 +205,8 @@ def valence_maximum():  # Should lie in Gamma - L direction
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    # left_column_values_generate()
     # create_grid()
     # check_convergence()
-    # create_file([[1,2,3],[4,5,6],[7,8,9]])
-    plot_3d_intersects()
+    # plot_3d_intersects()
+    plot_3d_energy(5.16)
     # valence_maximum()
