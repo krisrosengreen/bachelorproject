@@ -55,7 +55,8 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3):
             if np.array_equal(band1, band2):
                 continue
 
-            idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
+            # idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
+            idxs = np.where(np.abs(band1[:, 1] - band2[:, 1]) < epsilon)[0]
 
             for idx in idxs:
                 if emin <= (yval := band1[idx][1]) and yval <= emax:
@@ -87,6 +88,7 @@ def plot_bands_and_intersections(filename):
 
         plt.scatter(xs_int, ys_int)
     plt.show()
+
 
 if __name__ == "__main__":
     os.chdir("qefiles/")

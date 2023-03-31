@@ -70,27 +70,23 @@ def copy_dat_file(output_name):
 
 
 def generate_grid():
-    kx_max = 10
-    ky_max = 10
-    kz_max = 101
+    kx_range = [-1, 1]
+    ky_range = [-1, 1]
+    kz_range = [-1, 1]
 
-    start = 0
-    step = 2
-    mult = 0.01
+    kx_num_points = 40
+    ky_num_points = 40
+    kz_num_points = 100
 
-    for i in range(kx_max):
-        for j in range(ky_max):
+    for kx in np.linspace(*kx_range, kx_num_points):
+        for ky in np.linspace(*ky_range, ky_num_points):
 
             grid = []
-            for k in range(start, kz_max, step):
-                kx = i*0.1
-                ky = j*0.1
-                kz = k*mult
-
+            for kz in np.linspace(*kz_range, kz_num_points):
                 grid.append([kx, ky, kz])
 
             create_file(grid)
-            yield (i, j)
+            yield (kx, ky)
 
 
 def create_grid():
@@ -98,7 +94,7 @@ def create_grid():
     created = 1
     while ret := next(g, None):
         (i,j)=ret
-        print(f"\rCurrent [{i}, {j}]", end='')
+        print(f"\rCurrent [{i:.4f}, {j:.4f}]", end='')
         calculation_success = calculate_energies()
         create_band_image(BANDS_GNUFILE, f"images/image_{i}_{j}.png")
         copy_dat_file(f"kx_{i}_ky_{j}.dat")
@@ -146,11 +142,14 @@ def plot_3d_intersects():
     gnu_files = os.listdir("gnufiles")
 
     for gnu_file in gnu_files:
-        splitted = gnu_file.split('.')[0].split("_")
-        kx = int(splitted[1])
-        ky = int(splitted[3])
+        splitted_no_fextension = ".".join(gnu_file.split('.')[:-2]).split("_")
 
-        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=4, emax=5.5)
+        kx = float(splitted_no_fextension[1])
+        ky = float(splitted_no_fextension[3])
+
+        print(gnu_file, kx, ky)
+
+        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=3, emax=5, epsilon=0.01)
 
         for intersection in intersections:
             xdata.append(kx)
@@ -160,12 +159,21 @@ def plot_3d_intersects():
     ax.scatter3D(xdata, ydata, zdata)
     plt.show()
 
+def valence_maximum():  # Should lie in Gamma - L direction
+    # First create grid from (0,0,0) to (0.5, 0.5, 0.5)
+    num_points = 20
+
+    grid = np.ones((20, 3)) * np.linspace(0, 0.5, num_points)[np.newaxis].T
+    create_file(grid)
+    calculate_energies()
+
+
 
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
     # left_column_values_generate()
-    # create_grid()
+    create_grid()
     # check_convergence()
     # create_file([[1,2,3],[4,5,6],[7,8,9]])
-    plot_3d_intersects()
+    # plot_3d_intersects()

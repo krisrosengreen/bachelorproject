@@ -1,4 +1,5 @@
 import os
+from main import FILENAME, FILEOUTPUT, PP_FILENAME, PP_FILEOUTPUT
 
 def get_string_within(s, char1, char2):
     string_builder = ""
