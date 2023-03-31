@@ -1,7 +1,22 @@
 import os
 from main import FILENAME, FILEOUTPUT, PP_FILENAME, PP_FILEOUTPUT
 
-def get_string_within(s, char1, char2):
+
+def get_string_within(s, char1, char2) -> str:
+    """
+    Find substring in string 's' that have starting char 'char1' and ending char 'char2'
+
+    Parameters
+    ----------
+    s : str
+        String to find substring from
+
+    char1 : str
+        The starting character
+
+    char2 : str
+        The ending character
+    """
     string_builder = ""
 
     start = -1
@@ -17,7 +32,16 @@ def get_string_within(s, char1, char2):
 
     return s[start+1:end]
 
+
 def check_eigenvalues(filename) -> bool:  # There has to be 8 eigenvalues
+    """
+    Check that there are no more or no less than 8 eigenvalues in file 'filename'
+
+    Parameters
+    ----------
+    filename : str
+        Name and path to file
+    """
     with open(filename, 'r') as f:
         file_content = f.read()
 
@@ -56,10 +80,23 @@ def check_eigenvalues(filename) -> bool:  # There has to be 8 eigenvalues
 
 
 def check_success(espresso_output) -> bool:
+    """
+    Check that the output given from Quantum Espresso indicates that the job
+    finished successfully
+
+    Parameters
+    ----------
+    espresso_output : str
+        Quantum Espresso command output
+    """
     return "JOB DONE" in espresso_output
 
 
 def calculate_energies() -> bool:  # Returns True if successful
+    """
+    Run Quantum Espresso console commands to calculate energies from Quantum Espresso
+    input file 'si.bandspy.in'
+    """
     outp1 = os.popen(f"pw.x -i {FILENAME} > {FILEOUTPUT}; cat {FILEOUTPUT}")
     outp2 = os.popen(f"bands.x < {PP_FILENAME} > {PP_FILEOUTPUT}; cat {PP_FILEOUTPUT}")
 

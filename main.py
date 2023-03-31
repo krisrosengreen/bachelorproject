@@ -25,23 +25,39 @@ BANDS_GNUFILE = "si_bands.dat.gnu"
 
 FORMATTING_DECIMALS = 4
 
-EPSILON_CONVERGENCE = 0.05
-
-
 def inputfile_row_format(row, row_num) -> str:
+    """
+    Format row list to a string, the same way Quantum Espresso does it.
+
+    Parameters
+    ----------
+    row : list
+        point to be formatted
+
+    row_num : int
+        The row-number this row corresponds to
+    """
     FD = FORMATTING_DECIMALS
     return f"   {row[0]:.{FD}f} {row[1]:.{FD}f} {row[2]:.{FD}f} {row_num: >3}\n"
 
 
-def create_file(matrix):
+def create_file(points):
+    """
+    Create a Quantum Espresso input file from given points
+
+    Parameters
+    ----------
+    points - list
+        Contains points to be used in Quantum Espresso to create band structure
+    """
     string_builder = ""
 
     with open(TEMPLATE, "r") as f:
         string_builder = f.read() + "\n"
 
-    string_builder += f"   {len(matrix)}\n"
+    string_builder += f"   {len(points)}\n"
 
-    for c, row in enumerate(matrix):
+    for c, row in enumerate(points):
         string_builder += inputfile_row_format(row, c)
 
     with open(FILENAME, 'w') as f:
@@ -49,6 +65,14 @@ def create_file(matrix):
 
 
 def create_image(output_name):
+    """
+    From file 'si_bands.dat.gnu' create band structure image and save file to argument 'output_name'
+
+    Parameters
+    ----------
+    output_name : str
+        Name of file to save image as
+    """
     # load data
     data = np.loadtxt(BANDS_GNUFILE)
 
@@ -65,18 +89,45 @@ def create_image(output_name):
 
 
 def copy_dat_file(output_name):
+    """
+    Copy 'si_bands.dat' file to folder qefiles/datfiles/ and change name to contain
+    kx and ky values.
+
+    Similarly, copy 'si_bands.dat.gnu' to qefiles/gnufiles/
+
+    Parameters
+    ----------
+    output_name : str
+        Name of file to save image as
+    """
     os.system(f"cp si_bands.dat datfiles/{output_name}")
     os.system(f"cp {BANDS_GNUFILE} gnufiles/{output_name}.gnu")
 
 
-def generate_grid():
-    kx_range = [-1, 1]
-    ky_range = [-1, 1]
-    kz_range = [-1, 1]
+def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_points=40, ky_num_points=40, kz_num_points=100) -> tuple:
+    """
+    Creates a 3D grid. For each point create Quantum Espresso file.
 
-    kx_num_points = 40
-    ky_num_points = 40
-    kz_num_points = 100
+    Parameters
+    ----------
+    kx_range : list
+        List of size 2. The kx-range
+
+    ky_range : list
+        Similar to kx_range but in y direction.
+
+    kz_range : list
+        Similar to kx_range but in z direction
+
+    kx_num_points : int
+        Number of points in x-direction
+
+    ky_num_points : int
+        Number of points in y-direction
+
+    kz_num_points : int
+        Number of points in z-direction
+    """
 
     for kx in np.linspace(*kx_range, kx_num_points):
         for ky in np.linspace(*ky_range, ky_num_points):
@@ -90,6 +141,10 @@ def generate_grid():
 
 
 def create_grid():
+    """
+    Creates a grid defined by the function 'generate_grid'. Copy '.dat' and '.gnu' files to respective folders.
+    Lastly, create images of the band structure.
+    """
     g = generate_grid()
     while ret := next(g, None):
         (i,j)=ret
@@ -100,7 +155,15 @@ def create_grid():
     print("\nDone!")
 
 
-def check_convergence():
+def check_convergence(epsilon_convergence=0.05):
+    """
+    Check that energies converge
+
+    Parameters
+    ----------
+    epsilon_convergence : float
+        The difference between points must be below this threshold to converge
+    """
     ecutwfcs = [5,10,15,20,25,30,35,40,45,50,55,60]
     g = generate_grid()
     while kpair := next(g, None):
@@ -121,16 +184,30 @@ def check_convergence():
             energies.append(energy)
             print(f"\rConvergence testing k-pair (i={i}, j={j}) - E={energy}... ", end='')
             if len(energies) >= 2:
-                if abs(energies[-1] - energies[-2]) < EPSILON_CONVERGENCE:
+                if abs(energies[-1] - energies[-2]) < epsilon_convergence:
                     break
 
-        if abs(energies[-1] - energies[-2]) < EPSILON_CONVERGENCE:
+        if abs(energies[-1] - energies[-2]) < epsilon_convergence:
             print("  Converged!")
         else:
             print("  Not converged!")
 
 
 def plot_3d_intersects(emin=5.1, emax=5.19, epsilon=0.01):
+    """
+    Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
+
+    Parameters
+    ----------
+    emin : float
+        The minimum energy
+
+    emax : float
+        The maximum energy
+
+    epsilon : float
+        The threshold energy difference between bands
+    """
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
@@ -158,6 +235,17 @@ def plot_3d_intersects(emin=5.1, emax=5.19, epsilon=0.01):
 
 
 def plot_3d_energy(energy, epsilon=0.01):
+    """
+    Plot all points on bands calculated near 'energy' and within 'epsilon'
+
+    Parameters
+    ----------
+    energy : float
+        The energy used to find points on bands
+
+    epsilon : float
+        The energy difference threshold
+    """
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
@@ -183,7 +271,13 @@ def plot_3d_energy(energy, epsilon=0.01):
     ax.scatter3D(xdata, ydata, zdata)
     plt.show()
 
-def valence_maximum():  # Should lie in Gamma - L direction
+
+def valence_maximum():
+    """
+    Finds the valence band maximum in the Gamma-L direction.
+    """
+
+    # Should lie in Gamma - L direction
     # First create grid from (0,0,0) to (0.5, 0.5, 0.5)
     num_points = 20
     grid = np.ones((20, 3)) * np.linspace(0, 0.5, num_points)[np.newaxis].T

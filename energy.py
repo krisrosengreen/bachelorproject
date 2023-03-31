@@ -5,6 +5,18 @@ import os
 
 
 def create_band_image(filename, output):
+    """
+    From file given by argument 'filename' create band structure image
+    and save file to argument 'output'
+
+    Parameters
+    ----------
+    filename : str
+        Name and path to gnu file to be used to create image
+
+    output : str
+        Name of file to save image as
+    """
     with open(filename) as f:
         bands_data = f.read()
 
@@ -23,7 +35,16 @@ def create_band_image(filename, output):
     plt.clf()
     plt.cla()
 
-def read_dat_file(filename):
+
+def read_dat_file(filename) -> list:
+    """
+    Reads a dat file from argument 'filename' to get bands
+
+    Parameters
+    ----------
+    filename : str
+        Name of file
+    """
     with open(filename, "r") as f:
         lines = f.readlines()
 
@@ -42,7 +63,25 @@ def read_dat_file(filename):
     return bands
 
 
-def find_intersections(filename, epsilon=0.1, emin=1, emax=3):
+def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
+    """
+    Find intersections in 'filename' within energy-min and energy-max that are within
+    an energy threshold
+
+    Parameters
+    ----------
+    filename : str
+        Name of file to load
+
+    epsilon : float
+        Energy difference threshold
+
+    emin : float
+        Minimum energy
+
+    emax : float
+        Maximum energy
+    """
     bands = np.array(read_dat_file(filename))
 
     points_intersect = []
@@ -62,7 +101,22 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3):
 
     return points_intersect
 
-def within_energy(filename, energy, epsilon=0.1):
+
+def within_energy(filename, energy, epsilon=0.1) -> list:
+    """
+    Find all points that are within energy and energy threshold
+
+    Parameters
+    ----------
+    filename : str
+        Name of file
+
+    energy : float
+        Points with energy similar to this is returned
+
+    epsilon : float
+        Energy threshold
+    """
     bands = np.array(read_dat_file(filename))
 
     points_intersect = []
@@ -77,7 +131,16 @@ def within_energy(filename, energy, epsilon=0.1):
 
     return points_intersect
 
-def get_bands(filename):
+
+def get_bands(filename) -> list:
+    """
+    From filename get bands
+
+    Parameters
+    ----------
+    filename : str
+        Name of file
+    """
     with open(filename) as f:
         bands_data = f.read()
 
@@ -96,7 +159,16 @@ def get_bands(filename):
 
     return bands
 
+
 def plot_bands_and_intersections(filename):
+    """
+    Plot bands and band intersections
+
+    Parameters
+    ----------
+    filename : str
+        File to load bands from
+    """
     with open(filename) as f:
         bands_data = f.read()
 
