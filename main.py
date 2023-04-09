@@ -104,7 +104,7 @@ def copy_dat_file(output_name):
     os.system(f"cp {BANDS_GNUFILE} gnufiles/{output_name}.gnu")
 
 
-def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_points=40, ky_num_points=40, kz_num_points=100) -> tuple:
+def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_points=41, ky_num_points=41, kz_num_points=41) -> tuple:
     """
     Creates a 3D grid. For each point create Quantum Espresso file.
 
@@ -269,10 +269,13 @@ def plot_3d_energy(energy, epsilon=0.01):
             zdata.append(intersection[0])
 
     ax.scatter3D(xdata, ydata, zdata)
+    ax.set_xlabel("kx")
+    ax.set_ylabel("ky")
+    ax.set_zlabel("kz")
     plt.show()
 
 
-def valence_maximum():
+def valence_maximum(show=False):
     """
     Finds the valence band maximum in the Gamma-L direction.
     """
@@ -290,10 +293,39 @@ def valence_maximum():
         col = "r"
         if c == 3:
             col = "g"
-            valence_maximum = np.max(band[:, 1])
-            print("Valence max: ", valence_maximum)
-        plt.plot(band[:, 0], band[:, 1], c=col)
-    plt.show()
+            valence_max = np.max(band[:, 1])
+        if show:
+            plt.plot(band[:, 0], band[:, 1], c=col)
+    if show:
+        plt.show()
+    return valence_max
+
+
+def conduction_minimum(show=False):
+    """
+    Finds the conduction minimum in the Gamma - X direction
+    """
+
+    # Should lie in Gamma - L direction
+    # First create grid from (0,0,0) to (0.5, 0.0, 0.0)
+    num_points = 20
+    grid = np.zeros((num_points, 3))
+    grid[:, 0] = np.linspace(-1, 1, num_points)
+    create_file(grid)
+    success = calculate_energies()
+
+    # Plot bands and get the band with valence maximum and corresponding max value
+    bands = get_bands(BANDS_GNUFILE)
+    for c, band in enumerate(bands):
+        col = "r"
+        if c == 4:
+            col = "g"
+            conduction_min = np.max(band[:, 1])
+        if show:
+            plt.plot(band[:, 0], band[:, 1], c=col)
+    if show:
+        plt.show()
+    return conduction_min
 
 
 if __name__ == "__main__":
@@ -302,5 +334,6 @@ if __name__ == "__main__":
     # create_grid()
     # check_convergence()
     # plot_3d_intersects()
-    plot_3d_energy(5.16)
-    # valence_maximum()
+    # plot_3d_energy(5.33)
+    # print(valence_maximum(show=True))
+    conduction_minimum(show=True)
