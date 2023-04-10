@@ -4,8 +4,11 @@ from copy import deepcopy
 from subprocess import check_output
 from matplotlib import rcParamsDefault
 from mpl_toolkits import mplot3d
+from datetime import timedelta
 import matplotlib.pyplot as plt
 import numpy as np
+import time
+import math
 import os
 import re
 
@@ -145,13 +148,32 @@ def create_grid():
     Creates a grid defined by the function 'generate_grid'. Copy '.dat' and '.gnu' files to respective folders.
     Lastly, create images of the band structure.
     """
-    g = generate_grid()
+
+    kx_range = [-1,1]
+    ky_range = [-1,1]
+    kz_range = [-1,1]
+
+    kx_num_points = 41
+    ky_num_points = 41
+    kz_num_points = 41
+
+    g = generate_grid(kx_range, ky_range, kz_range, kx_num_points, ky_num_points, kz_num_points)
+
+    count = 0
+    print(f"Starting", end="")
     while ret := next(g, None):
         (i,j)=ret
-        print(f"\rCurrent [{i:.4f}, {j:.4f}]", end='')
+        time_start = time.time()
+
         calculation_success = calculate_energies()
         create_band_image(BANDS_GNUFILE, f"images/image_{i}_{j}.png")
         copy_dat_file(f"kx_{i}_ky_{j}.dat")
+
+        time_taken = time.time() - time_start
+        remaining_calcs = kx_num_points*kz_num_points - count
+        secs_remain = math.floor(time_taken * remaining_calcs)
+        print(f"\rCurrent [{i:.4f}, {j:.4f}] - Time left {str(timedelta(seconds=secs_remain))}\t", end='')
+        count += 1
     print("\nDone!")
 
 
@@ -331,9 +353,9 @@ def conduction_minimum(show=False):
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    # create_grid()
+    create_grid()
     # check_convergence()
     # plot_3d_intersects()
     # plot_3d_energy(5.33)
     # print(valence_maximum(show=True))
-    conduction_minimum(show=True)
+    # conduction_minimum(show=True)

@@ -3,3 +3,4 @@ images/*.png
 __pycache__/*
 qefiles/__pycache__/*
 qefiles/tmp/*
+qefiles/tmp/silicon.save/*
