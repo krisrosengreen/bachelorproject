@@ -393,6 +393,6 @@ if __name__ == "__main__":
     # plot_3d_energy(5.33)
     # print(valence_maximum(show=True))
     # conduction_minimum(show=True)
-    # init_scf_calculation()
+    init_scf_calculation()
     create_grid()
     # read_dat_file()

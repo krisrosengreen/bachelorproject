@@ -1,5 +1,6 @@
-datfiles/*.dat
-images/*.png
+qefiles/datfiles/*
+qefiles/images/*
+qefiles/gnufiles/*
 __pycache__/*
 qefiles/__pycache__/*
 qefiles/tmp/*
