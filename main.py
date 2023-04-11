@@ -11,6 +11,7 @@ import time
 import math
 import os
 import re
+import subprocess
 
 
 plt.rcParams["figure.dpi"]=150
@@ -21,12 +22,15 @@ TEMPLATE = "si.bands.template"
 FILENAME = "si.bandspy.in"
 FILEOUTPUT = "si.bandspy.out"
 
+AUTOGRID_FILENAME = "si.bands.autogrid"
+
 PP_FILENAME = "si_bands_pp.in"
 PP_FILEOUTPUT = "si_bands_pp.out"
 
 BANDS_GNUFILE = "si_bands.dat.gnu"
 
 FORMATTING_DECIMALS = 4
+
 
 def inputfile_row_format(row, row_num) -> str:
     """
@@ -170,11 +174,42 @@ def create_grid():
         copy_dat_file(f"kx_{i}_ky_{j}.dat")
 
         time_taken = time.time() - time_start
-        remaining_calcs = kx_num_points*kz_num_points - count
+        remaining_calcs = kx_num_points*ky_num_points - count
         secs_remain = math.floor(time_taken * remaining_calcs)
-        print(f"\rCurrent [{i:.4f}, {j:.4f}] - Time left {str(timedelta(seconds=secs_remain))}\t", end='')
+        print(f"\rCurrent [{i:.4f}, {j:.4f}] - {count}/{kx_num_points*ky_num_points} - Time left {str(timedelta(seconds=secs_remain))}\t", end='')
         count += 1
     print("\nDone!")
+
+
+def read_dat_file():
+    with open("si_bands.dat", "r") as f:
+        lines = f.readlines()
+
+    points = []
+
+    for i in range(1, len(lines), 2):
+        kx,ky,kz = list(map(float, lines[i].split()))
+        #print(kx, ky, kz)
+        points.append((kx,ky,kz))
+
+    points = np.array(points)
+
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(points[:, 0], points[:, 1], points[:, 2])
+    ax.set_xlabel("kx")
+    ax.set_ylabel("ky")
+    ax.set_zlabel("kz")
+    plt.show()
+
+
+def init_scf_calculation():
+    print("Beginning initial scf calculation!")
+    process = subprocess.Popen(['pw.x', '-i', AUTOGRID_FILENAME],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    stdout,stderr = process.communicate()
+    print("Done!")
 
 
 def check_convergence(epsilon_convergence=0.05):
@@ -353,9 +388,11 @@ def conduction_minimum(show=False):
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    create_grid()
     # check_convergence()
     # plot_3d_intersects()
     # plot_3d_energy(5.33)
     # print(valence_maximum(show=True))
     # conduction_minimum(show=True)
+    # init_scf_calculation()
+    create_grid()
+    # read_dat_file()

@@ -1,5 +1,5 @@
 
-     Program BANDS v.6.7MaX starts on 10Apr2023 at 13:54:54 
+     Program BANDS v.6.7MaX starts on 11Apr2023 at 15:17:35 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
@@ -27,18 +27,18 @@
      G-vector sticks info
      --------------------
      sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
-     Sum         793     793    253                14649    14649    2733
+     Sum         793     793    253                14649    14649    2685
 
      Reading collected, re-writing distributed wavefunctions
-     high-symmetry point: -1.0000-1.0000-1.0000   x coordinate   0.0000
-     high-symmetry point: -1.0000-1.0000 1.0000   x coordinate   2.0000
+     high-symmetry point: -1.0000-0.7000-1.0000   x coordinate   0.0000
+     high-symmetry point: -1.0000-0.7000 1.0000   x coordinate   2.0000
 
      Plottable bands (eV) written to file si_bands.dat.gnu
      Bands written to file si_bands.dat
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -1.00000  )
+                    xk=(  -1.00000,  -0.70000,  -1.00000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -47,7 +47,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.95000  )
+                    xk=(  -1.00000,  -0.70000,  -0.95000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -56,7 +56,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.90000  )
+                    xk=(  -1.00000,  -0.70000,  -0.90000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -65,7 +65,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.85000  )
+                    xk=(  -1.00000,  -0.70000,  -0.85000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -74,7 +74,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.80000  )
+                    xk=(  -1.00000,  -0.70000,  -0.80000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -83,7 +83,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.75000  )
+                    xk=(  -1.00000,  -0.70000,  -0.75000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -92,7 +92,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.70000  )
+                    xk=(  -1.00000,  -0.70000,  -0.70000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -101,7 +101,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.65000  )
+                    xk=(  -1.00000,  -0.70000,  -0.65000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -110,7 +110,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.60000  )
+                    xk=(  -1.00000,  -0.70000,  -0.60000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -119,7 +119,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.55000  )
+                    xk=(  -1.00000,  -0.70000,  -0.55000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -128,7 +128,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.50000  )
+                    xk=(  -1.00000,  -0.70000,  -0.50000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -137,7 +137,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.45000  )
+                    xk=(  -1.00000,  -0.70000,  -0.45000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -146,7 +146,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.40000  )
+                    xk=(  -1.00000,  -0.70000,  -0.40000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -155,7 +155,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.35000  )
+                    xk=(  -1.00000,  -0.70000,  -0.35000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -164,7 +164,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.30000  )
+                    xk=(  -1.00000,  -0.70000,  -0.30000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -173,7 +173,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.25000  )
+                    xk=(  -1.00000,  -0.70000,  -0.25000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -182,7 +182,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.20000  )
+                    xk=(  -1.00000,  -0.70000,  -0.20000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -191,7 +191,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.15000  )
+                    xk=(  -1.00000,  -0.70000,  -0.15000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -200,7 +200,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.10000  )
+                    xk=(  -1.00000,  -0.70000,  -0.10000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -209,7 +209,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,  -0.05000  )
+                    xk=(  -1.00000,  -0.70000,  -0.05000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -218,7 +218,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.00000  )
+                    xk=(  -1.00000,  -0.70000,   0.00000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -227,7 +227,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.05000  )
+                    xk=(  -1.00000,  -0.70000,   0.05000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -236,7 +236,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.10000  )
+                    xk=(  -1.00000,  -0.70000,   0.10000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -245,7 +245,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.15000  )
+                    xk=(  -1.00000,  -0.70000,   0.15000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -254,7 +254,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.20000  )
+                    xk=(  -1.00000,  -0.70000,   0.20000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -263,7 +263,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.25000  )
+                    xk=(  -1.00000,  -0.70000,   0.25000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -272,7 +272,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.30000  )
+                    xk=(  -1.00000,  -0.70000,   0.30000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -281,7 +281,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.35000  )
+                    xk=(  -1.00000,  -0.70000,   0.35000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -290,7 +290,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.40000  )
+                    xk=(  -1.00000,  -0.70000,   0.40000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -299,7 +299,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.45000  )
+                    xk=(  -1.00000,  -0.70000,   0.45000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -308,7 +308,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.50000  )
+                    xk=(  -1.00000,  -0.70000,   0.50000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -317,7 +317,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.55000  )
+                    xk=(  -1.00000,  -0.70000,   0.55000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -326,7 +326,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.60000  )
+                    xk=(  -1.00000,  -0.70000,   0.60000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -335,7 +335,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.65000  )
+                    xk=(  -1.00000,  -0.70000,   0.65000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -344,7 +344,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.70000  )
+                    xk=(  -1.00000,  -0.70000,   0.70000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -353,7 +353,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.75000  )
+                    xk=(  -1.00000,  -0.70000,   0.75000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -362,7 +362,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.80000  )
+                    xk=(  -1.00000,  -0.70000,   0.80000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -371,7 +371,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.85000  )
+                    xk=(  -1.00000,  -0.70000,   0.85000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -380,7 +380,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.90000  )
+                    xk=(  -1.00000,  -0.70000,   0.90000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -389,7 +389,7 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   0.95000  )
+                    xk=(  -1.00000,  -0.70000,   0.95000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
@@ -398,17 +398,17 @@
 
  **************************************************************************
 
-                    xk=(  -1.00000,  -1.00000,   1.00000  )
+                    xk=(  -1.00000,  -0.70000,   1.00000  )
 
      zone border point and non-symmorphic group 
      symmetry decomposition not available
 
  **************************************************************************
 
-     BANDS        :      0.14s CPU      0.16s WALL
+     BANDS        :      0.15s CPU      0.15s WALL
 
 
-   This run was terminated on:  13:54:54  10Apr2023            
+   This run was terminated on:  15:17:35  11Apr2023            
 
 =------------------------------------------------------------------------------=
    JOB DONE.
