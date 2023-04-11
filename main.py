@@ -385,8 +385,19 @@ def conduction_minimum(show=False):
     return conduction_min
 
 
+def init_setup():
+    required_folders = ["images", "datfiles", "gnufiles"]
+    items = os.listdir()
+    for rf in required_folders:
+        if rf not in items:
+            os.mkdir(rf)
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
+
+    # Ensure all necessary folders exist
+    init_setup()
 
     # check_convergence()
     # plot_3d_intersects()
