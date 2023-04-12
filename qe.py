@@ -1,5 +1,6 @@
-import os
 from main import FILENAME, FILEOUTPUT, PP_FILENAME, PP_FILEOUTPUT
+import os
+import subprocess
 
 
 def get_string_within(s, char1, char2) -> str:
@@ -97,11 +98,19 @@ def calculate_energies() -> bool:  # Returns True if successful
     Run Quantum Espresso console commands to calculate energies from Quantum Espresso
     input file 'si.bandspy.in'
     """
-    outp1 = os.popen(f"pw.x -i {FILENAME} > {FILEOUTPUT}; cat {FILEOUTPUT}")
-    outp2 = os.popen(f"bands.x < {PP_FILENAME} > {PP_FILEOUTPUT}; cat {PP_FILEOUTPUT}")
+    process1 = subprocess.Popen([f"pw.x", "-i", FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process2 = subprocess.Popen(["bands.x", "-i", PP_FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    check1 = check_success(outp1.read())
-    check2 = check_success(outp2.read())
+    outp1,_ = process1.communicate()
+    outp2,_ = process2.communicate()
+
+    with open(FILEOUTPUT, "wb") as f:
+        f.write(outp1)
+    with open(PP_FILEOUTPUT, "wb") as f:
+        f.write(outp2)
+
+    check1 = check_success(outp1.decode())
+    check2 = check_success(outp2.decode())
     check3 = check_eigenvalues("si_bands_pp.out")
 
     # return check1 and check2 and check3  # Check if all were successful
