@@ -367,7 +367,7 @@ def conduction_minimum(show=False):
     # First create grid from (0,0,0) to (0.5, 0.0, 0.0)
     num_points = 20
     grid = np.zeros((num_points, 3))
-    grid[:, 0] = np.linspace(-1, 1, num_points)
+    grid[:, 0] = np.linspace(0, 1, num_points)
     create_file(grid)
     success = calculate_energies()
 
@@ -393,17 +393,31 @@ def init_setup():
             os.mkdir(rf)
 
 
-if __name__ == "__main__":
-    os.chdir("qefiles/")
+def band_gap():
+    valence_max = valence_maximum()
+    conduct_min = conduction_minimum()
+    band_gap = conduct_min - valence_max
+    print("Band gap:", band_gap)  # This becomes 2.23 eV - Which is very weird? This value should be underestimated
 
-    # Ensure all necessary folders exist
+
+if __name__ == "__main__":
+    """
+    Basic setup
+    """
+    os.chdir("qefiles/")
     init_setup()
 
     # check_convergence()
     # plot_3d_intersects()
     # plot_3d_energy(5.33)
-    # print(valence_maximum(show=True))
-    # conduction_minimum(show=True)
-    init_scf_calculation()
-    create_grid()
+    # init_scf_calculation()
+    # create_grid()
     # read_dat_file()
+
+    """
+    Conduction and valence, band minimum and maximum, respectively.
+    """
+    valence_max = valence_maximum(show=True)
+    print(valence_max)
+    # conduct_min = conduction_minimum(show=True)
+    # print(conduct_min)
