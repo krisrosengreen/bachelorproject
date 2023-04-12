@@ -1,7 +1,15 @@
+__pycache__/*
 qefiles/datfiles/*
 qefiles/images/*
 qefiles/gnufiles/*
-__pycache__/*
 qefiles/__pycache__/*
 qefiles/tmp/*
 qefiles/tmp/silicon.save/*
+
+qefiles/si.bandspy.in
+qefiles/si.bandspy.out
+qefiles/si_bands_pp.out
+qefiles/si_bands.dat
+qefiles/si_bands.dat.gnu
+qefiles/si_bands.dat.rap
+qefiles/si_bands_pp_py.out
