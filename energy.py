@@ -115,6 +115,7 @@ def calculate_energies() -> bool:  # Returns True if successful
     input file 'si.bandspy.in'
     """
     process1 = subprocess.Popen([f"pw.x", "-i", FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process1.wait()
     process2 = subprocess.Popen(["bands.x", "-i", PP_FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     outp1,_ = process1.communicate()
@@ -225,7 +226,6 @@ def create_grid():
     g = generate_grid(kx_range, ky_range, kz_range, kx_num_points, ky_num_points, kz_num_points)
 
     count = 0
-    print(f"Starting", end="")
     while ret := next(g, None):
         (i,j)=ret
         time_start = time.time()
