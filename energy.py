@@ -529,7 +529,7 @@ def check_convergence(epsilon_convergence=0.05):
             print("  Not converged!")
 
 
-def plot_3d_intersects(emin=5.1, emax=5.19, epsilon=0.01):
+def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
 
@@ -656,7 +656,7 @@ def conduction_minimum(show=False):
         col = "r"
         if c == 4:
             col = "g"
-            conduction_min = np.max(band[:, 1])
+            conduction_min = np.min(band[:, 1])
         if show:
             plt.plot(band[:, 0], band[:, 1], c=col)
     if show:
