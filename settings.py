@@ -3,6 +3,7 @@ FILENAME = "si.bandspy.in"
 FILEOUTPUT = "si.bandspy.out"
 
 AUTOGRID_FILENAME = "si.scf.autogrid"
+OPTLATTICE_FILENAME = "si.scf.optlattice"
 
 PP_FILENAME = "si_bands_pp.in"
 PP_FILEOUTPUT = "si_bands_pp.out"

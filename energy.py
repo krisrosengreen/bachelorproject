@@ -266,15 +266,98 @@ def read_dat_file():
 
 def init_scf_calculation():
     print("Beginning initial scf calculation!")
-    process = subprocess.Popen(['pw.x', '-i', AUTOGRID_FILENAME],
+    stdout, stderr = scf_calculation(AUTOGRID_FILENAME)
+    print("Done!")
+
+
+def scf_calculation(filename):
+    process = subprocess.Popen(['pw.x', '-i', filename],
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
-    stdout,stderr = process.communicate()
-    print("Done!")
+    return process.communicate()
+
 
 """
 Get useful stuff out of code above
 """
+
+
+def get_energy(filename):
+    (stdout, stderr) = scf_calculation(filename)
+    lines = stdout.decode().split("\n")
+    assert check_success(stdout.decode()), "Not successful in calculating energy!"
+    for line in lines:
+        if "total energy" in line:
+            values = get_values(line)
+            return values[0]
+
+
+def file_change_line(filename, numline, newline):
+    with open(filename, "r") as f:
+        lines = f.readlines()
+        lines[numline] = newline
+
+    with open(filename, "w") as f:
+        f.writelines(lines)
+
+
+def optimize_lattice_constant(iterations=10) -> float:
+    """
+    Find the optimal lattice constant that gives the lowest energy.
+    Returns the lattice constant that gives the lowest energy.
+
+    Parameters
+    ----------
+    iterations : int
+        Number of iterations to go through to find the lattice constant
+
+    Returns
+    -------
+    float
+        The best lattice constant the program could find
+    """
+
+    # First get energy at 3 arbitrary points
+    # Then choose energy which is between top two
+
+    LATTICE_CONST_LINE = 9
+
+    const_format_line = lambda val: f"    celldm(1)={val},\n"
+
+    const1 = 6
+    const2 = 10
+    const3 = 17
+
+    const_energy = {}
+    for const in [const1, const2, const3]:
+        file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(const))
+        energy = get_energy(OPTLATTICE_FILENAME)
+        const_energy[const] = energy
+        print("Energy found:", energy, "contant:", const)
+
+    # test
+    # const_energy = {6: -11, 10: -15, 11: -14}
+
+    for _ in range(iterations):
+        # Get best two and use value halfway between
+        sorted_energies = sorted(const_energy.items(), key=lambda x: x[1])
+        const1 = sorted_energies[0][0]
+        const2 = sorted_energies[1][0]
+
+        new_const = (const1 + const2)/2
+
+        # Calculate energy with new constant
+        file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(new_const))
+        energy = get_energy(OPTLATTICE_FILENAME)
+        const_energy[new_const] = energy
+
+        print("Energy found:", energy, "constant:", new_const)
+
+    sorted_energies = sorted(const_energy.items(), key=lambda x: x[1])
+    best_constant = sorted_energies[0][0]
+    print("Best contant:", best_constant)
+    print("Dictionary", const_energy)
+
 
 
 def create_band_image(filename, output):
@@ -674,4 +757,5 @@ def band_gap():
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    plot_bands_and_intersections("si_bands.dat.gnu")
+    val = optimize_lattice_constant()
+    print("Optimized lattice constant:", val)

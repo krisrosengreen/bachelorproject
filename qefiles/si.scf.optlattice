@@ -1,0 +1,27 @@
+ &control
+   calculation='scf'
+   prefix='silicon',
+   pseudo_dir = 'pseudo/',
+   restart_mode='from_scratch',
+   outdir =  'tmp/',
+ /
+ &system    
+    ibrav=  2,
+    celldm(1)=10.369140625,
+    nat=  2,
+    ntyp= 1,
+    ecutwfc = 50.0, 
+    nbnd = 8
+ /
+ &electrons
+    conv_thr=1e-8
+ /
+ATOMIC_SPECIES
+ Si  28.0855 Si.pbe-rrkj.UPF
+ATOMIC_POSITIONS alat
+ Si 0.00 0.00 0.00 
+ Si 0.25 0.25 0.25 
+K_POINTS automatic
+#  tpiba = k-points in units of 2pi/a
+#  number of k-points
+24 24 24 0 0 0
