@@ -1,14 +1,13 @@
 from settings import *
 from utils import *
 from copy import deepcopy
+from subprocess import check_output
+from mpl_toolkits import mplot3d
+from datetime import timedelta
 import matplotlib.pyplot as plt
 import numpy as np
 import re
 import subprocess
-from subprocess import check_output
-from mpl_toolkits import mplot3d
-from utils import inputfile_row_format
-from datetime import timedelta
 import os
 import time
 import math
@@ -584,6 +583,10 @@ def plot_3d_energy(energy, epsilon=0.01):
     """
     fig = plt.figure()
     ax = plt.axes(projection='3d')
+
+    # Plot the brillouin zone
+    # for xx in fcc_points():
+        # ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
 
     xdata = []
     ydata = []

@@ -26,9 +26,9 @@ if __name__ == "__main__":
 
     # check_convergence()
     # plot_3d_intersects()
-    # plot_3d_energy(5.33)
+    # plot_3d_energy(5.3)
     # init_scf_calculation()
-    create_grid()
+    # create_grid()
     # read_dat_file()
 
     """
