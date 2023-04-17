@@ -1,17 +1,18 @@
 from settings import *
 from utils import *
 from copy import deepcopy
-import matplotlib.pyplot as plt
-import numpy as np
-import re
-import subprocess
+from scipy.optimize import fmin
 from subprocess import check_output
 from mpl_toolkits import mplot3d
 from utils import inputfile_row_format
 from datetime import timedelta
+import matplotlib.pyplot as plt
+import numpy as np
 import os
 import time
 import math
+import re
+import subprocess
 
 
 """
@@ -301,15 +302,15 @@ def file_change_line(filename, numline, newline):
         f.writelines(lines)
 
 
-def optimize_lattice_constant(iterations=10) -> float:
+def optimize_lattice_constant(max_iterations=30) -> float:
     """
     Find the optimal lattice constant that gives the lowest energy.
     Returns the lattice constant that gives the lowest energy.
 
     Parameters
     ----------
-    iterations : int
-        Number of iterations to go through to find the lattice constant
+    max_iterations : int
+        Maximum number of iterations to go through to find the best lattice constant
 
     Returns
     -------
@@ -317,47 +318,20 @@ def optimize_lattice_constant(iterations=10) -> float:
         The best lattice constant the program could find
     """
 
-    # First get energy at 3 arbitrary points
-    # Then choose energy which is between top two
-
-    LATTICE_CONST_LINE = 9
-
-    const_format_line = lambda val: f"    celldm(1)={val},\n"
-
-    const1 = 6
-    const2 = 10
-    const3 = 17
-
-    const_energy = {}
-    for const in [const1, const2, const3]:
-        file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(const))
+    def get_lattice_energy(lattice_const):
+        lattice_const = lattice_const[0]
+        LATTICE_CONST_LINE = 9
+        const_format_line = lambda val: f"    celldm(1)={val},\n"
+        file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(lattice_const))
         energy = get_energy(OPTLATTICE_FILENAME)
-        const_energy[const] = energy
-        print("Energy found:", energy, "contant:", const)
 
-    # test
-    # const_energy = {6: -11, 10: -15, 11: -14}
+        print("LC:", lattice_const, "E:", energy)
 
-    for _ in range(iterations):
-        # Get best two and use value halfway between
-        sorted_energies = sorted(const_energy.items(), key=lambda x: x[1])
-        const1 = sorted_energies[0][0]
-        const2 = sorted_energies[1][0]
+        return energy
 
-        new_const = (const1 + const2)/2
+    best_val = fmin(get_lattice_energy, x0=11, maxiter=max_iterations)
 
-        # Calculate energy with new constant
-        file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(new_const))
-        energy = get_energy(OPTLATTICE_FILENAME)
-        const_energy[new_const] = energy
-
-        print("Energy found:", energy, "constant:", new_const)
-
-    sorted_energies = sorted(const_energy.items(), key=lambda x: x[1])
-    best_constant = sorted_energies[0][0]
-    print("Best contant:", best_constant)
-    print("Dictionary", const_energy)
-
+    return best_val[0]
 
 
 def create_band_image(filename, output):
