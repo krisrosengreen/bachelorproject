@@ -21,4 +21,4 @@ ATOMIC_POSITIONS alat
 K_POINTS automatic
 #  tpiba = k-points in units of 2pi/a
 #  number of k-points
-40 40 40 0 0 0
+48 48 48 0 0 0

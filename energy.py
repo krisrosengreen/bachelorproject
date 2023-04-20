@@ -115,10 +115,13 @@ def calculate_energies() -> bool:  # Returns True if successful
     Run Quantum Espresso console commands to calculate energies from Quantum Espresso
     input file 'si.bandspy.in'
     """
+
+    # First make sure that TMP folder exists
+    assert os.path.isdir("tmp"), "No tmp folder found! Remember to do initial scf calculation!"
+
     process1 = subprocess.Popen([f"pw.x", "-i", FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process1.wait()
     process2 = subprocess.Popen(["bands.x", "-i", PP_FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
     outp1,_ = process1.communicate()
     outp2,_ = process2.communicate()
 
@@ -132,7 +135,7 @@ def calculate_energies() -> bool:  # Returns True if successful
     check3 = check_eigenvalues("si_bands_pp.out")
 
     # return check1 and check2 and check3  # Check if all were successful
-    return check2 and check3  # Check if all were successful
+    return check1 and check2 and check3  # Check if all were successful
 
 
 def create_file(points):
