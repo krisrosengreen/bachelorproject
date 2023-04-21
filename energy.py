@@ -733,5 +733,5 @@ def band_gap():
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    val = optimize_lattice_constant()
+    val = optimize_lattice_constant(max_iterations=100)
     print("Optimized lattice constant:", val)
