@@ -75,13 +75,13 @@ def silicon_band_structure(init_scf_calc=True):
 def VBM_figure():
     vbm_energy = valence_maximum()
     plot_3d_energy(vbm_energy)
-    plt.savefig("qefiles/images/valence_maximum_3d_plot.png")
+    plt.savefig("images/valence_maximum_3d_plot.png")
 
 
 def CBM_figure():
     cbm_energy = conduction_minimum()
     plot_3d_energy(cbm_energy)
-    plt.savefig("qefiles/images/conduction_3d_plot.png")
+    plt.savefig("images/conduction_3d_plot.png")
 
 
 def create_figures():
