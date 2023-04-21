@@ -13,3 +13,6 @@ qefiles/si_bands.dat
 qefiles/si_bands.dat.gnu
 qefiles/si_bands.dat.rap
 qefiles/si_bands_pp_py.out
+
+.DS_Store
+.DS_Store?
