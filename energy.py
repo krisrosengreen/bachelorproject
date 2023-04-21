@@ -265,7 +265,6 @@ def read_dat_file():
     ax.set_xlabel("kx")
     ax.set_ylabel("ky")
     ax.set_zlabel("kz")
-    plt.show()
 
 
 def init_scf_calculation():
@@ -524,7 +523,6 @@ def plot_bands_and_intersections(filename):
         ys_int = np_intersecs[:,1]
 
         plt.scatter(xs_int, ys_int)
-    plt.show()
 
 
 def create_image(output_name):
@@ -627,7 +625,6 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
             zdata.append(intersection[0])
 
     ax.scatter3D(xdata, ydata, zdata)
-    plt.show()
 
 
 def plot_3d_energy(energy, epsilon=0.01):
@@ -668,7 +665,6 @@ def plot_3d_energy(energy, epsilon=0.01):
     ax.set_xlabel("kx")
     ax.set_ylabel("ky")
     ax.set_zlabel("kz")
-    plt.show()
 
 
 def valence_maximum(show=False):

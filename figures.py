@@ -25,7 +25,7 @@ def delete_duplicate_neighbors(matrix):
     indeces = []
     for i in range(len(matrix) - 1):
         c = (matrix[i] - matrix[i+1])
-        if c.dot(c) < 0.0001:
+        if c.dot(c) < 0.00001:
             indeces.append(i)
     new_array = []
     for c,row in enumerate(matrix):
@@ -38,14 +38,14 @@ def delete_duplicate_neighbors(matrix):
 def silicon_band_structure(init_scf_calc=True):
     """
     Look at key silicon band structure.
-    Path: L - Gamma - X
+    Path: L - Gamma - X - W - U - Gamma
     """
     if init_scf_calc:
         init_scf_calculation()
 
     # Create Grid:
 
-    num_points=10
+    num_points=50
     L = [0.5,0.5,0.5]
     gamma = [0,0,0]
     X = [0,1,0]
@@ -71,7 +71,32 @@ def silicon_band_structure(init_scf_calc=True):
     create_band_image(BANDS_GNUFILE, "images/si_band.png")
 
 
+
+def VBM_figure():
+    vbm_energy = valence_maximum()
+    plot_3d_energy(vbm_energy)
+    plt.savefig("qefiles/images/valence_maximum_3d_plot.png")
+
+
+def CBM_figure():
+    cbm_energy = conduction_minimum()
+    plot_3d_energy(cbm_energy)
+    plt.savefig("qefiles/images/conduction_3d_plot.png")
+
+
+def create_figures():
+    print("Creating figure for silicon band structure")
+    silicon_band_structure(False)
+
+    print("Creating figure for valence band maximum")
+    VBM_figure()
+
+    print("Creating figure for conduction band minimum")
+    CBM_figure()
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    silicon_band_structure(False)
+    #silicon_band_structure(False)
+    create_figures()
