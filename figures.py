@@ -105,20 +105,12 @@ def create_figures():
     CBM_figure()
 
 
-def size_point(matrix, point: int) -> float:
-    """
-    Find size to a given point in a matrix
-    """
-    summed = 0
-    for i in range(1, point):
-        vec = matrix[i] - matrix[i-1]
-        summed += np.sqrt(vec.dot(vec))
-
-    return summed
+def test(a: np.ndarray, b: int):
+    print(a, b)
 
 
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
     silicon_band_structure(False)
-    #create_figures()
+    # create_figures()
