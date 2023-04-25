@@ -622,9 +622,12 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
         for intersection in intersections:
             xdata.append(kx)
             ydata.append(ky)
-            zdata.append(intersection[0])
+            zdata.append(intersection[0] - 1)  # Offset by -1
 
     ax.scatter3D(xdata, ydata, zdata)
+    ax.set_xlabel("kx")
+    ax.set_ylabel("ky")
+    ax.set_zlabel("kz")
 
 
 def plot_3d_energy(energy, epsilon=0.01):
