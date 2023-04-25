@@ -418,10 +418,10 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
 
     points_intersect = []
 
-    for band1 in bands:
+    for c1, band1 in enumerate(bands):
 
-        for band2 in bands:
-            if np.array_equal(band1, band2):
+        for c2, band2 in enumerate(bands):
+            if c1 == c2:
                 continue
 
             # idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
