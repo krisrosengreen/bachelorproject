@@ -67,9 +67,19 @@ def silicon_band_structure(init_scf_calc=True):
     # Calculate energies
     calculate_energies()
 
+    xval_L = size_point(combined_grid, 0)
+    xval_gamma = size_point(combined_grid, 50)
+    xval_X = size_point(combined_grid, 100)
+    xval_W = size_point(combined_grid, 150)
+    xval_U = size_point(combined_grid, 200)
+    xval_gamma_last = size_point(combined_grid, len(combined_grid))
+
+    plt.xticks([xval_L, xval_gamma, xval_X, xval_W, xval_U, xval_gamma_last], ["L", r"$\Gamma$", "X", "W", "U", r"$\Gamma$"])
+    for x in [xval_L, xval_gamma, xval_X, xval_W, xval_U, xval_gamma_last]:
+        plt.axvline(x, lw=0.5, linestyle="--", c='k')
+
     # Create image
     create_band_image(BANDS_GNUFILE, "images/si_band.png")
-
 
 
 def VBM_figure():
@@ -86,7 +96,7 @@ def CBM_figure():
 
 def create_figures():
     print("Creating figure for silicon band structure")
-    silicon_band_structure(False)
+    silicon_band_structure(True)
 
     print("Creating figure for valence band maximum")
     VBM_figure()
@@ -95,8 +105,12 @@ def create_figures():
     CBM_figure()
 
 
+def test(a: np.ndarray, b: int):
+    print(a, b)
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    #silicon_band_structure(False)
-    create_figures()
+    silicon_band_structure(False)
+    # create_figures()

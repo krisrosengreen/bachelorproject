@@ -418,10 +418,10 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
 
     points_intersect = []
 
-    for band1 in bands:
+    for c1, band1 in enumerate(bands):
 
-        for band2 in bands:
-            if np.array_equal(band1, band2):
+        for c2, band2 in enumerate(bands):
+            if c1 == c2:
                 continue
 
             # idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
@@ -724,7 +724,30 @@ def band_gap():
     valence_max = valence_maximum()
     conduct_min = conduction_minimum()
     band_gap = conduct_min - valence_max
-    print("Band gap:", band_gap)  # This becomes 2.23 eV - Which is very weird? This value should be underestimated
+    print("Band gap:", band_gap)
+
+
+def size_point(matrix, point: int) -> float:
+    """
+    Find quantum espresso representational value to a given point in a matrix
+
+    Parameters
+    ----------
+    matrix : list
+        List containing the points to calculate energies of
+    point : int
+        The index of the point to which the representational value is to be calculated
+
+    Return
+    ------
+    float : The representational value
+    """
+    summed = 0
+    for i in range(1, point):
+        vec = matrix[i] - matrix[i-1]
+        summed += np.sqrt(vec.dot(vec))
+
+    return summed
 
 
 if __name__ == "__main__":
