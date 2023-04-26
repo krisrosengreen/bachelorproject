@@ -587,6 +587,11 @@ def check_convergence(epsilon_convergence=0.05):
             print("  Not converged!")
 
 
+def plot_brillouin_zone(ax):
+    for xx in fcc_points():
+        ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
+
+
 def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
@@ -622,9 +627,14 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
         for intersection in intersections:
             xdata.append(kx)
             ydata.append(ky)
-            zdata.append(intersection[0])
+            zdata.append(intersection[0] - 1)  # Offset by -1
+
+    plot_brillouin_zone(ax)
 
     ax.scatter3D(xdata, ydata, zdata)
+    ax.set_xlabel("kx")
+    ax.set_ylabel("ky")
+    ax.set_zlabel("kz")
 
 
 def plot_3d_energy(energy, epsilon=0.01):
@@ -660,6 +670,8 @@ def plot_3d_energy(energy, epsilon=0.01):
             xdata.append(kx)
             ydata.append(ky)
             zdata.append(intersection[0])
+
+    plot_brillouin_zone(ax)
 
     ax.scatter3D(xdata, ydata, zdata)
     ax.set_xlabel("kx")
@@ -724,20 +736,18 @@ def band_gap():
     valence_max = valence_maximum()
     conduct_min = conduction_minimum()
     band_gap = conduct_min - valence_max
-    print("Band gap:", band_gap)
+    print("Band gap:", band_gap)  # This becomes 2.23 eV - Which is very weird? This value should be underestimated
 
 
 def size_point(matrix, point: int) -> float:
     """
     Find quantum espresso representational value to a given point in a matrix
-
     Parameters
     ----------
     matrix : list
         List containing the points to calculate energies of
     point : int
         The index of the point to which the representational value is to be calculated
-
     Return
     ------
     float : The representational value
