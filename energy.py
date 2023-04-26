@@ -587,6 +587,11 @@ def check_convergence(epsilon_convergence=0.05):
             print("  Not converged!")
 
 
+def plot_brillouin_zone(ax):
+    for xx in fcc_points():
+        ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
+
+
 def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
@@ -623,6 +628,8 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
             xdata.append(kx)
             ydata.append(ky)
             zdata.append(intersection[0] - 1)  # Offset by -1
+
+    plot_brillouin_zone(ax)
 
     ax.scatter3D(xdata, ydata, zdata)
     ax.set_xlabel("kx")
@@ -663,6 +670,8 @@ def plot_3d_energy(energy, epsilon=0.01):
             xdata.append(kx)
             ydata.append(ky)
             zdata.append(intersection[0])
+
+    plot_brillouin_zone(ax)
 
     ax.scatter3D(xdata, ydata, zdata)
     ax.set_xlabel("kx")
