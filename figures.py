@@ -46,17 +46,12 @@ def silicon_band_structure(init_scf_calc=True):
     # Create Grid:
 
     num_points=50
-    L = [0.5,0.5,0.5]
-    gamma = [0,0,0]
-    X = [0,1,0]
-    W = [0.5,1,0]
-    U = [0.25,1,0.25]
 
-    LGAMMA = generate_points_between(L, gamma, num_points)
-    GAMMAX = generate_points_between(gamma, X, num_points)
-    XW = generate_points_between(X, W, num_points)
-    WU = generate_points_between(W, U, num_points)
-    UGAMMA = generate_points_between(U, gamma, num_points)
+    LGAMMA = generate_points_between(symmetry_points.L, symmetry_points.gamma, num_points)
+    GAMMAX = generate_points_between(symmetry_points.gamma, symmetry_points.X, num_points)
+    XW = generate_points_between(symmetry_points.X, symmetry_points.W, num_points)
+    WU = generate_points_between(symmetry_points.W, symmetry_points.U, num_points)
+    UGAMMA = generate_points_between(symmetry_points.U, symmetry_points.gamma, num_points)
     combined_grid = np.vstack((LGAMMA, GAMMAX, XW, WU, UGAMMA))
 
     combined_grid = delete_duplicate_neighbors(combined_grid)
@@ -68,10 +63,10 @@ def silicon_band_structure(init_scf_calc=True):
     calculate_energies()
 
     xval_L = size_point(combined_grid, 0)
-    xval_gamma = size_point(combined_grid, 50)
-    xval_X = size_point(combined_grid, 100)
-    xval_W = size_point(combined_grid, 150)
-    xval_U = size_point(combined_grid, 200)
+    xval_gamma = size_point(combined_grid, 49)
+    xval_X = size_point(combined_grid, 98)
+    xval_W = size_point(combined_grid, 147)
+    xval_U = size_point(combined_grid, 196)
     xval_gamma_last = size_point(combined_grid, len(combined_grid))
 
     plt.xticks([xval_L, xval_gamma, xval_X, xval_W, xval_U, xval_gamma_last], ["L", r"$\Gamma$", "X", "W", "U", r"$\Gamma$"])
@@ -79,19 +74,19 @@ def silicon_band_structure(init_scf_calc=True):
         plt.axvline(x, lw=0.5, linestyle="--", c='k')
 
     # Create image
-    create_band_image(BANDS_GNUFILE, "images/si_band.png")
+    create_band_image(BANDS_GNUFILE, "figures/si_band.png")
 
 
 def VBM_figure():
     vbm_energy = valence_maximum()
     plot_3d_energy(vbm_energy)
-    plt.savefig("images/valence_maximum_3d_plot.png")
+    plt.savefig("figures/valence_maximum_3d_plot.png")
 
 
 def CBM_figure():
     cbm_energy = conduction_minimum()
     plot_3d_energy(cbm_energy)
-    plt.savefig("images/conduction_3d_plot.png")
+    plt.savefig("figures/conduction_3d_plot.png")
 
 
 def create_figures():
@@ -105,12 +100,32 @@ def create_figures():
     CBM_figure()
 
 
-def test(a: np.ndarray, b: int):
-    print(a, b)
+def dispersion_XW():
+    """
+    Look at the dispersion in the X-W symmetry line
+    """
+    X = symmetry_points.X
+    W = symmetry_points.W
+
+    XW = generate_points_between(X.copy(), W.copy(), 50)
+    WX= generate_points_between(W.copy(), X.copy()*2, 50)
+
+    XW2 = generate_points_between(X.copy()*2, W.copy()*2, 50)
+    WX2 = generate_points_between(W.copy()*2, X.copy()*3, 50)
+
+    combined_grid = np.vstack((XW, WX, XW2, WX2))
+    combined_grid = delete_duplicate_neighbors(combined_grid)
+
+    create_file(combined_grid)
+
+    calculate_energies()
+
+    create_band_image(BANDS_GNUFILE, "figures/dispersion_XW.png")
 
 
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    silicon_band_structure(False)
+    # silicon_band_structure(init_scf_calc=False)
     # create_figures()
+    dispersion_XW()

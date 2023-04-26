@@ -16,6 +16,19 @@ import subprocess
 
 
 """
+Useful values
+"""
+
+
+class symmetry_points:
+    L = [0.5,0.5,0.5]
+    gamma = [0,0,0]
+    X = [0,1,0]
+    W = [0.5,1,0]
+    U = [0.25,1,0.25]
+
+
+"""
 Interface Quantum Espresso software
 """
 
@@ -630,8 +643,9 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
             zdata.append(intersection[0] - 1)  # Offset by -1
 
     plot_brillouin_zone(ax)
+    plot_symmetry_points(ax)
 
-    ax.scatter3D(xdata, ydata, zdata)
+    ax.scatter3D(xdata, ydata, zdata, s=2)
     ax.set_xlabel("kx")
     ax.set_ylabel("ky")
     ax.set_zlabel("kz")
@@ -758,6 +772,15 @@ def size_point(matrix, point: int) -> float:
         summed += np.sqrt(vec.dot(vec))
 
     return summed
+
+
+def plot_symmetry_points(ax):
+    points = np.array([symmetry_points.gamma,
+    symmetry_points.L,
+    symmetry_points.U,
+    symmetry_points.X,
+    symmetry_points.W])
+    ax.scatter3D(points[:, 0], points[:, 1], points[:, 2], c="r", s=5)
 
 
 if __name__ == "__main__":
