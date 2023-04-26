@@ -622,9 +622,12 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
         for intersection in intersections:
             xdata.append(kx)
             ydata.append(ky)
-            zdata.append(intersection[0])
+            zdata.append(intersection[0] - 1)  # Offset by -1
 
     ax.scatter3D(xdata, ydata, zdata)
+    ax.set_xlabel("kx")
+    ax.set_ylabel("ky")
+    ax.set_zlabel("kz")
 
 
 def plot_3d_energy(energy, epsilon=0.01):
@@ -724,34 +727,11 @@ def band_gap():
     valence_max = valence_maximum()
     conduct_min = conduction_minimum()
     band_gap = conduct_min - valence_max
-    print("Band gap:", band_gap)
-
-
-def size_point(matrix, point: int) -> float:
-    """
-    Find quantum espresso representational value to a given point in a matrix
-
-    Parameters
-    ----------
-    matrix : list
-        List containing the points to calculate energies of
-    point : int
-        The index of the point to which the representational value is to be calculated
-
-    Return
-    ------
-    float : The representational value
-    """
-    summed = 0
-    for i in range(1, point):
-        vec = matrix[i] - matrix[i-1]
-        summed += np.sqrt(vec.dot(vec))
-
-    return summed
+    print("Band gap:", band_gap)  # This becomes 2.23 eV - Which is very weird? This value should be underestimated
 
 
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    val = optimize_lattice_constant(max_iterations=100)
+    val = optimize_lattice_constant()
     print("Optimized lattice constant:", val)
