@@ -739,8 +739,29 @@ def band_gap():
     print("Band gap:", band_gap)  # This becomes 2.23 eV - Which is very weird? This value should be underestimated
 
 
+def size_point(matrix, point: int) -> float:
+    """
+    Find quantum espresso representational value to a given point in a matrix
+    Parameters
+    ----------
+    matrix : list
+        List containing the points to calculate energies of
+    point : int
+        The index of the point to which the representational value is to be calculated
+    Return
+    ------
+    float : The representational value
+    """
+    summed = 0
+    for i in range(1, point):
+        vec = matrix[i] - matrix[i-1]
+        summed += np.sqrt(vec.dot(vec))
+
+    return summed
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    val = optimize_lattice_constant()
+    val = optimize_lattice_constant(max_iterations=100)
     print("Optimized lattice constant:", val)
