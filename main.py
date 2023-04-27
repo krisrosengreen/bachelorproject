@@ -24,22 +24,28 @@ if __name__ == "__main__":
     os.chdir("qefiles/")
     init_setup()
 
+    """
+    Conduction and valence, band minimum and maximum, respectively.
+    """
+
+    valence_max = valence_maximum()
+    print("valence max:", valence_max)
+    conduct_min = conduction_minimum()
+    print("conduction min:", conduct_min)
     # Plot only values within this range
+
+    """
+    Look at nodal lines, energy etc
+    """
+
     plotrange = PlottingRange([-0.1, 1.1], [-0.1, 1.1], [-0.1, 1.1])  # (xlim, ylim, zlim)
 
     # check_convergence()
-    plot_3d_intersects(emin=-5, emax=15, plotrange=plotrange)
+    plot_3d_intersects(emin=4, emax=valence_max+0.1, plotrange=plotrange, colors=False, epsilon=0.01)
     # plot_3d_energy(5.75)
     # init_scf_calculation()
     # create_grid()
     # read_dat_file()
 
-    """
-    Conduction and valence, band minimum and maximum, respectively.
-    """
-    # valence_max = valence_maximum()
-    # print(valence_max)
-    # conduct_min = conduction_minimum()
-    # print(conduct_min)
 
     plt.show()

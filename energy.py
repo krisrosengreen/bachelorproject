@@ -654,6 +654,15 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=Plot
                 G = np.clip(1 * (absoluted) / 20, 0, 1)
                 B = 0
 
+                # Debugging
+                # np_X = np.array(symmetry_points.X)
+                # np_point = np.array([kx, ky, kz])
+                # dist = np_X - np_point
+
+                # if dist.dot(dist) < 0.2:
+                    # print(f"image_{kx}_{ky}.png")
+                    # print(" - Energy", energy)
+
                 colors.append((R, G, B))
 
     # plot_brillouin_zone(ax)
