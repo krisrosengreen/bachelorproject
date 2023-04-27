@@ -24,8 +24,11 @@ if __name__ == "__main__":
     os.chdir("qefiles/")
     init_setup()
 
+    # Plot only values within this range
+    plotrange = PlottingRange([-0.1, 1.1], [-0.1, 1.1], [-0.1, 1.1])  # (xlim, ylim, zlim)
+
     # check_convergence()
-    plot_3d_intersects(emin=3, emax=5)
+    plot_3d_intersects(emin=-5, emax=15, plotrange=plotrange)
     # plot_3d_energy(5.75)
     # init_scf_calculation()
     # create_grid()

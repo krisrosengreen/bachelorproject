@@ -437,7 +437,6 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
             if c1 == c2:
                 continue
 
-            # idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
             idxs = np.where(np.abs(band1[:, 1] - band2[:, 1]) < epsilon)[0]
 
             for idx in idxs:
@@ -605,7 +604,7 @@ def plot_brillouin_zone(ax):
         ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
 
 
-def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
+def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard()):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
 
@@ -629,6 +628,8 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
 
     gnu_files = os.listdir("gnufiles")
 
+    colors = []
+
     for gnu_file in gnu_files:
         splitted_no_fextension = ".".join(gnu_file.split('.')[:-2]).split("_")
 
@@ -638,14 +639,30 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
         intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon)
 
         for intersection in intersections:
-            xdata.append(kx)
-            ydata.append(ky)
-            zdata.append(intersection[0] - 1)  # Offset by -1
+            kz = intersection[0] - 1  # Offset by -1 because of way QE represents this
+
+            if plotrange.check_within((kx, ky, kz)):
+                xdata.append(kx)
+                ydata.append(ky)
+                zdata.append(kz)  # Offset by -1
+
+                energy = intersection[1]
+                absoluted = abs(energy + 5)
+
+                # Colors
+                R = np.clip(1 * (20 - absoluted) / 20, 0, 1)
+                G = np.clip(1 * (absoluted) / 20, 0, 1)
+                B = 0
+
+                colors.append((R, G, B))
 
     # plot_brillouin_zone(ax)
     plot_symmetry_points(ax)
 
-    ax.scatter3D(xdata, ydata, zdata, s=2)
+    if colors:
+        ax.scatter3D(xdata, ydata, zdata, s=2, c=colors)
+    else:
+        ax.scatter3D(xdata, ydata, zdata, s=2)
     ax.set_xlabel("kx")
     ax.set_ylabel("ky")
     ax.set_zlabel("kz")

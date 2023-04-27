@@ -6,6 +6,25 @@ from scipy.spatial import Voronoi
 FORMATTING_DECIMALS = 4
 
 
+class PlottingRange():
+    @staticmethod
+    def standard():
+        return PlottingRange([-100, 100], [-100, 100], [-100, 100])  # Just a large value so nothing is left out
+
+    def __init__(self, xlim, ylim, zlim):
+        self.xlim = xlim
+        self.ylim = ylim
+        self.zlim = zlim
+
+    @staticmethod
+    def _within(val: float, lim: list) -> bool:
+        return (val > lim[0]) and (val < lim[1])
+
+
+    def check_within(self, point: tuple) -> bool:
+        return self._within(point[0], self.xlim) and self._within(point[1], self.ylim) and self._within(point[2], self.zlim)
+
+
 def inputfile_row_format(row, row_num) -> str:
     """
     Format row list to a string, the same way Quantum Espresso does it.

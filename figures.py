@@ -123,9 +123,17 @@ def dispersion_XW():
     create_band_image(BANDS_GNUFILE, "figures/dispersion_XW.png")
 
 
+def nodal_lines():
+    # Nodal line in Gamma-L direction
+    plot_3d_intersects(emin=4, emax=6)
+    plt.title(r"Energy range: [4, 5]. Nodal line in direction $\Gamma$-L")
+    plt.savefig("figures/NL_gamma-L.png")
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
     # silicon_band_structure(init_scf_calc=False)
     # create_figures()
-    dispersion_XW()
+    # dispersion_XW()
+    nodal_lines()
