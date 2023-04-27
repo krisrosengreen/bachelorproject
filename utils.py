@@ -25,9 +25,9 @@ def inputfile_row_format(row, row_num) -> str:
 def fcc_points() -> list:
     # Code taken from
     # http://staff.ustc.edu.cn/~zqj/posts/howto-plot-brillouin-zone/
-    cell = np.array([[0.0, 0.5, 0.5],
-                 [0.5, 0.0, 0.5],
-                 [0.5, 0.5, 0.0]])
+    cell = np.array([[0.0, 1, 1],
+                 [1, 0.0, 1],
+                 [1, 1, 0.0]])
 
     cell = np.asarray(cell, dtype=float)
     assert cell.shape == (3, 3)

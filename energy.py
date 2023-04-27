@@ -642,7 +642,7 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
             ydata.append(ky)
             zdata.append(intersection[0] - 1)  # Offset by -1
 
-    plot_brillouin_zone(ax)
+    # plot_brillouin_zone(ax)
     plot_symmetry_points(ax)
 
     ax.scatter3D(xdata, ydata, zdata, s=2)
@@ -685,7 +685,7 @@ def plot_3d_energy(energy, epsilon=0.01):
             ydata.append(ky)
             zdata.append(intersection[0])
 
-    plot_brillouin_zone(ax)
+    # plot_brillouin_zone(ax)
 
     ax.scatter3D(xdata, ydata, zdata)
     ax.set_xlabel("kx")
