@@ -7,21 +7,68 @@ FORMATTING_DECIMALS = 4
 
 
 class PlottingRange():
+    """
+    Class used to define ranges wherein values should be plotted
+    """
     @staticmethod
     def standard():
-        return PlottingRange([-100, 100], [-100, 100], [-100, 100])  # Just a large value so nothing is left out
+        """
+        A standard instance of this class with high values in the limits such that all
+        values are plotted
 
-    def __init__(self, xlim, ylim, zlim):
+        Return
+        ------
+        PlottingRange : Returns standard instance of this class that allows for all values
+        """
+        return PlottingRange([-100, 100],[-100, 100],[-100, 100])
+
+    def __init__(self, xlim: list, ylim: list, zlim: list):
+        """
+        Parameters
+        ----------
+        xlim : list
+            Limit for x-values
+        ylim : list
+            Limit for y-values
+        zlim : list
+            Limit for z-values
+        """
         self.xlim = xlim
         self.ylim = ylim
         self.zlim = zlim
 
     @staticmethod
     def _within(val: float, lim: list) -> bool:
+        """
+        Check if value within limit
+
+        Parameters
+        ----------
+        val : float
+            Check if this value is within the limit "lim"
+        lim : list
+            List to define allowed upper and lower values
+
+        Return
+        ------
+        bool : Returns whether or not point is within "lim"
+        """
         return (val > lim[0]) and (val < lim[1])
 
 
     def check_within(self, point: tuple) -> bool:
+        """
+        Check if point is within limits
+
+        Parameters
+        ----------
+        point : tuple
+            Tuple containing x, y, z values to check if it is within limits
+
+        Return
+        ------
+        bool : Returns whether or not point is within limit
+        """
         return self._within(point[0], self.xlim) and self._within(point[1], self.ylim) and self._within(point[2], self.zlim)
 
 
