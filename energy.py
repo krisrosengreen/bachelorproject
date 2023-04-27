@@ -775,12 +775,17 @@ def size_point(matrix, point: int) -> float:
 
 
 def plot_symmetry_points(ax):
-    points = np.array([symmetry_points.gamma,
-    symmetry_points.L,
-    symmetry_points.U,
-    symmetry_points.X,
-    symmetry_points.W])
-    ax.scatter3D(points[:, 0], points[:, 1], points[:, 2], c="r", s=5)
+    L = symmetry_points.L
+    X = symmetry_points.X
+    W = symmetry_points.W
+    U = symmetry_points.U
+    gamma = symmetry_points.gamma
+
+    points = [L,X,W,U,gamma]
+    labels = ["L", "X", "W", "U", r"$\Gamma$"]
+    for point, label in zip(points, labels):
+        ax.scatter3D(point[0], point[1], point[2], c="r", s=5)
+        ax.text(point[0], point[1], point[2], label)
 
 
 if __name__ == "__main__":
