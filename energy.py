@@ -21,6 +21,7 @@ Useful values
 
 
 class symmetry_points:
+    # kx, ky, kz
     L = [0.5,0.5,0.5]
     gamma = [0,0,0]
     X = [0,1,0]
@@ -298,7 +299,19 @@ Get useful stuff out of code above
 """
 
 
-def get_energy(filename):
+def get_total_energy(filename):
+    """
+    Get the total energy of from a QE scf calculation in a given output file "filename"
+
+    Parameters
+    ----------
+    filename : str
+        Name of output file form which the total energy can be read
+
+    Output
+    ------
+    float : The total energy
+    """
     (stdout, stderr) = scf_calculation(filename)
     lines = stdout.decode().split("\n")
     assert check_success(stdout.decode()), "Not successful in calculating energy!"
@@ -309,6 +322,18 @@ def get_energy(filename):
 
 
 def file_change_line(filename, numline, newline):
+    """
+    Change a line in a given file
+
+    Parameters
+    ----------
+    filename : str
+        Name of file for which a line will be changed
+    numline : int
+        Line number
+    newline : str
+        Content of the new line
+    """
     with open(filename, "r") as f:
         lines = f.readlines()
         lines[numline] = newline
@@ -338,7 +363,7 @@ def optimize_lattice_constant(max_iterations=30) -> float:
         LATTICE_CONST_LINE = 9
         const_format_line = lambda val: f"    celldm(1)={val},\n"
         file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(lattice_const))
-        energy = get_energy(OPTLATTICE_FILENAME)
+        energy = get_total_energy(OPTLATTICE_FILENAME)
 
         print("LC:", lattice_const, "E:", energy)
 
