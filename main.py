@@ -41,7 +41,8 @@ if __name__ == "__main__":
     plotrange = PlottingRange([0, 1], [0, 1], [0, 1])  # (xlim, ylim, zlim)
 
     # check_convergence()
-    plot_3d_intersects(emin=2, emax=valence_max+1.1, plotrange=plotrange, colors=False, epsilon=0.01, include_valence_bands=False)
+    plot_3d_intersects(emin=2, emax=valence_max+1.1, plotrange=plotrange, colors=False, epsilon=0.01, include_conduction_bands=False)
+    # valence_max = valence_maximum()
     # plot_3d_energy()
     # init_scf_calculation()
     # create_grid()

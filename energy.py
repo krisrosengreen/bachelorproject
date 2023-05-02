@@ -433,7 +433,7 @@ def read_dat_file(filename) -> list:
     return bands
 
 
-def find_intersections(filename, epsilon=0.1, emin=1, emax=3, include_valence_bands=True) -> list:
+def find_intersections(filename, epsilon=0.1, emin=1, emax=3, include_conduction_bands=True) -> list:
     """
     Find intersections in 'filename' within energy-min and energy-max that are within
     an energy threshold
@@ -452,7 +452,7 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3, include_valence_ba
     emax : float
         Maximum energy
     """
-    if include_valence_bands:
+    if include_conduction_bands:
         bands = get_bands(filename)
     else:
         bands = get_bands(filename)[:4]
@@ -632,7 +632,7 @@ def plot_brillouin_zone(ax):
         ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
 
 
-def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard(), include_valence_bands=True):
+def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard(), include_conduction_bands=True):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
 
@@ -664,7 +664,7 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=Plot
         kx = float(splitted_no_fextension[1])
         ky = float(splitted_no_fextension[3])
 
-        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon, include_valence_bands=include_valence_bands)
+        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon, include_conduction_bands=include_conduction_bands)
 
         for intersection in intersections:
             kz = intersection[0] - 1  # Offset by -1 because of way QE represents this
