@@ -433,7 +433,7 @@ def read_dat_file(filename) -> list:
     return bands
 
 
-def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
+def find_intersections(filename, epsilon=0.1, emin=1, emax=3, include_valence_bands=True) -> list:
     """
     Find intersections in 'filename' within energy-min and energy-max that are within
     an energy threshold
@@ -452,7 +452,10 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
     emax : float
         Maximum energy
     """
-    bands = np.array(read_dat_file(filename))
+    if include_valence_bands:
+        bands = get_bands(filename)
+    else:
+        bands = get_bands(filename)[:4]
 
     points_intersect = []
 
@@ -629,7 +632,7 @@ def plot_brillouin_zone(ax):
         ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
 
 
-def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard()):
+def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard(), include_valence_bands=True):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
 
@@ -661,7 +664,7 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=Plot
         kx = float(splitted_no_fextension[1])
         ky = float(splitted_no_fextension[3])
 
-        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon)
+        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon, include_valence_bands=include_valence_bands)
 
         for intersection in intersections:
             kz = intersection[0] - 1  # Offset by -1 because of way QE represents this
@@ -669,15 +672,17 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=Plot
             if plotrange.check_within((kx, ky, kz)):
                 xdata.append(kx)
                 ydata.append(ky)
-                zdata.append(kz)  # Offset by -1
+                zdata.append(kz)
 
                 energy = intersection[1]
                 absoluted = abs(energy + 5)
 
+                color_range_max = 10
+
                 # Colors
-                R = np.clip(1 * (20 - absoluted) / 20, 0, 1)
-                G = np.clip(1 * (absoluted) / 20, 0, 1)
-                B = 0
+                R = np.clip(1 * (color_range_max - absoluted) / color_range_max, 0, 1)
+                B = np.clip(1 * (absoluted) / color_range_max, 0, 1)
+                G = 0
 
                 # Debugging
                 # np_X = np.array(symmetry_points.X)
@@ -688,7 +693,10 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=Plot
                     # print(f"image_{kx}_{ky}.png")
                     # print(" - Energy", energy)
 
-                colors.append((R, G, B))
+                if energy > 5.9179:  # Valence band maximum
+                    colors.append((0.0,0.0,0.0))
+                else:
+                    colors.append((R, G, B))
 
     # plot_brillouin_zone(ax)
     plot_symmetry_points(ax)

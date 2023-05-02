@@ -53,7 +53,7 @@ class PlottingRange():
         ------
         bool : Returns whether or not point is within "lim"
         """
-        return (val > lim[0]) and (val < lim[1])
+        return (val >= lim[0]) and (val <= lim[1])
 
 
     def check_within(self, point: tuple) -> bool:

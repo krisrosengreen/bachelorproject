@@ -29,7 +29,7 @@ if __name__ == "__main__":
     """
 
     valence_max = valence_maximum()
-    # print("valence max:", valence_max)
+    print("valence max:", valence_max)
     conduct_min = conduction_minimum()
     # print("conduction min:", conduct_min)
     # Plot only values within this range
@@ -38,11 +38,11 @@ if __name__ == "__main__":
     Look at nodal lines, energy etc
     """
 
-    plotrange = PlottingRange([-0.1, 1.1], [-0.1, 1.1], [-0.1, 1.1])  # (xlim, ylim, zlim)
+    plotrange = PlottingRange([0, 1], [0, 1], [0, 1])  # (xlim, ylim, zlim)
 
     # check_convergence()
-    # plot_3d_intersects(emin=4, emax=valence_max+0.1, plotrange=plotrange, colors=False, epsilon=0.01)
-    plot_3d_energy(6.2)
+    plot_3d_intersects(emin=2, emax=valence_max+1.1, plotrange=plotrange, colors=False, epsilon=0.01, include_valence_bands=False)
+    # plot_3d_energy()
     # init_scf_calculation()
     # create_grid()
     # read_dat_file()
