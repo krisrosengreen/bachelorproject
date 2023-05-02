@@ -16,6 +16,20 @@ import subprocess
 
 
 """
+Useful values
+"""
+
+
+class symmetry_points:
+    # kx, ky, kz
+    L = [0.5,0.5,0.5]
+    gamma = [0,0,0]
+    X = [0,1,0]
+    W = [0.5,1,0]
+    U = [0.25,1,0.25]
+
+
+"""
 Interface Quantum Espresso software
 """
 
@@ -119,7 +133,7 @@ def calculate_energies() -> bool:  # Returns True if successful
     # First make sure that TMP folder exists
     assert os.path.isdir("tmp"), "No tmp folder found! Remember to do initial scf calculation!"
 
-    process1 = subprocess.Popen([f"pw.x", "-i", FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process1 = subprocess.Popen(["pw.x", "-i", FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process1.wait()
     process2 = subprocess.Popen(["bands.x", "-i", PP_FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outp1,_ = process1.communicate()
@@ -285,7 +299,19 @@ Get useful stuff out of code above
 """
 
 
-def get_energy(filename):
+def get_total_energy(filename):
+    """
+    Get the total energy of from a QE scf calculation in a given output file "filename"
+
+    Parameters
+    ----------
+    filename : str
+        Name of output file form which the total energy can be read
+
+    Output
+    ------
+    float : The total energy
+    """
     (stdout, stderr) = scf_calculation(filename)
     lines = stdout.decode().split("\n")
     assert check_success(stdout.decode()), "Not successful in calculating energy!"
@@ -296,6 +322,18 @@ def get_energy(filename):
 
 
 def file_change_line(filename, numline, newline):
+    """
+    Change a line in a given file
+
+    Parameters
+    ----------
+    filename : str
+        Name of file for which a line will be changed
+    numline : int
+        Line number
+    newline : str
+        Content of the new line
+    """
     with open(filename, "r") as f:
         lines = f.readlines()
         lines[numline] = newline
@@ -325,7 +363,7 @@ def optimize_lattice_constant(max_iterations=30) -> float:
         LATTICE_CONST_LINE = 9
         const_format_line = lambda val: f"    celldm(1)={val},\n"
         file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(lattice_const))
-        energy = get_energy(OPTLATTICE_FILENAME)
+        energy = get_total_energy(OPTLATTICE_FILENAME)
 
         print("LC:", lattice_const, "E:", energy)
 
@@ -424,7 +462,6 @@ def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
             if c1 == c2:
                 continue
 
-            # idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
             idxs = np.where(np.abs(band1[:, 1] - band2[:, 1]) < epsilon)[0]
 
             for idx in idxs:
@@ -587,7 +624,12 @@ def check_convergence(epsilon_convergence=0.05):
             print("  Not converged!")
 
 
-def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
+def plot_brillouin_zone(ax):
+    for xx in fcc_points():
+        ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
+
+
+def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard()):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
 
@@ -611,6 +653,8 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
 
     gnu_files = os.listdir("gnufiles")
 
+    colors = []
+
     for gnu_file in gnu_files:
         splitted_no_fextension = ".".join(gnu_file.split('.')[:-2]).split("_")
 
@@ -620,11 +664,42 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01):
         intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon)
 
         for intersection in intersections:
-            xdata.append(kx)
-            ydata.append(ky)
-            zdata.append(intersection[0])
+            kz = intersection[0] - 1  # Offset by -1 because of way QE represents this
 
-    ax.scatter3D(xdata, ydata, zdata)
+            if plotrange.check_within((kx, ky, kz)):
+                xdata.append(kx)
+                ydata.append(ky)
+                zdata.append(kz)  # Offset by -1
+
+                energy = intersection[1]
+                absoluted = abs(energy + 5)
+
+                # Colors
+                R = np.clip(1 * (20 - absoluted) / 20, 0, 1)
+                G = np.clip(1 * (absoluted) / 20, 0, 1)
+                B = 0
+
+                # Debugging
+                # np_X = np.array(symmetry_points.X)
+                # np_point = np.array([kx, ky, kz])
+                # dist = np_X - np_point
+
+                # if dist.dot(dist) < 0.2:
+                    # print(f"image_{kx}_{ky}.png")
+                    # print(" - Energy", energy)
+
+                colors.append((R, G, B))
+
+    # plot_brillouin_zone(ax)
+    plot_symmetry_points(ax)
+
+    if colors:
+        ax.scatter3D(xdata, ydata, zdata, s=2, c=colors)
+    else:
+        ax.scatter3D(xdata, ydata, zdata, s=2)
+    ax.set_xlabel("kx")
+    ax.set_ylabel("ky")
+    ax.set_zlabel("kz")
 
 
 def plot_3d_energy(energy, epsilon=0.01):
@@ -660,6 +735,8 @@ def plot_3d_energy(energy, epsilon=0.01):
             xdata.append(kx)
             ydata.append(ky)
             zdata.append(intersection[0])
+
+    # plot_brillouin_zone(ax)
 
     ax.scatter3D(xdata, ydata, zdata)
     ax.set_xlabel("kx")
@@ -724,20 +801,18 @@ def band_gap():
     valence_max = valence_maximum()
     conduct_min = conduction_minimum()
     band_gap = conduct_min - valence_max
-    print("Band gap:", band_gap)
+    print("Band gap:", band_gap)  # This becomes 2.23 eV - Which is very weird? This value should be underestimated
 
 
 def size_point(matrix, point: int) -> float:
     """
     Find quantum espresso representational value to a given point in a matrix
-
     Parameters
     ----------
     matrix : list
         List containing the points to calculate energies of
     point : int
         The index of the point to which the representational value is to be calculated
-
     Return
     ------
     float : The representational value
@@ -748,6 +823,20 @@ def size_point(matrix, point: int) -> float:
         summed += np.sqrt(vec.dot(vec))
 
     return summed
+
+
+def plot_symmetry_points(ax):
+    L = symmetry_points.L
+    X = symmetry_points.X
+    W = symmetry_points.W
+    U = symmetry_points.U
+    gamma = symmetry_points.gamma
+
+    points = [L,X,W,U,gamma]
+    labels = ["L", "X", "W", "U", r"$\Gamma$"]
+    for point, label in zip(points, labels):
+        ax.scatter3D(point[0], point[1], point[2], c="r", s=5)
+        ax.text(point[0], point[1], point[2], label)
 
 
 if __name__ == "__main__":
