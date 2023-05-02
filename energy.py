@@ -223,9 +223,9 @@ def create_grid():
     ky_range = [-1,1]
     kz_range = [-1,1]
 
-    kx_num_points = 41
-    ky_num_points = 41
-    kz_num_points = 41
+    kx_num_points = 101
+    ky_num_points = 101
+    kz_num_points = 101
 
     g = generate_grid(kx_range, ky_range, kz_range, kx_num_points, ky_num_points, kz_num_points)
 
