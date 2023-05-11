@@ -13,6 +13,7 @@ import time
 import math
 import re
 import subprocess
+import uuid  # Create unique filename
 
 
 """
@@ -175,7 +176,7 @@ def create_file(points):
         f.write(string_builder)
 
 
-def copy_dat_file(output_name):
+def copy_dat_file(gridname, kx, ky):
     """
     Copy 'si_bands.dat' file to folder qefiles/datfiles/ and change name to contain
     kx and ky values.
@@ -187,8 +188,17 @@ def copy_dat_file(output_name):
     output_name : str
         Name of file to save image as
     """
-    os.system(f"cp si_bands.dat datfiles/{output_name}")
-    os.system(f"cp {BANDS_GNUFILE} gnufiles/{output_name}.gnu")
+
+    unique_filename = uuid.uuid4().hex;
+
+    os.system(f"cp si_bands.dat datfiles/{unique_filename}")
+    os.system(f"cp {BANDS_GNUFILE} gnufiles/{unique_filename}.gnu")
+
+    if not os.path.isdir("config"):
+        os.makedirs("config")
+
+    with open(f"config/{gridname}", "a") as f:
+        f.write(f"{kx} {ky} {unique_filename}\n")
 
 
 def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_points=41, ky_num_points=41, kz_num_points=41) -> tuple:
@@ -227,7 +237,7 @@ def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_p
             yield (kx, ky)
 
 
-def create_grid():
+def create_grid(gridname):
     """
     Creates a grid defined by the function 'generate_grid'. Copy '.dat' and '.gnu' files to respective folders.
     Lastly, create images of the band structure.
@@ -249,8 +259,8 @@ def create_grid():
         time_start = time.time()
 
         calculation_success = calculate_energies()
-        create_band_image(BANDS_GNUFILE, f"images/image_{i}_{j}.png")
-        copy_dat_file(f"kx_{i}_ky_{j}.dat")
+        create_band_image(BANDS_GNUFILE, f"images/{gridname}_image_{i}_{j}.png")
+        copy_dat_file(gridname, kx=i, ky=j)
 
         time_taken = time.time() - time_start
         remaining_calcs = kx_num_points*ky_num_points - count
@@ -629,7 +639,22 @@ def plot_brillouin_zone(ax):
         ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
 
 
-def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard()):
+def get_grid_files(gridname):
+    with open(f"config/gridname", "r") as f:
+        lines = f.readlines()
+
+    # Remove empty lines
+    lines = list(filter(lambda x: len(x) != 0, lines))
+    data = []
+    
+    for line in lines:
+        vals = line.split()
+        data.append([(float(vals[0]), float(vals[1])), vals[2]])
+
+    return data
+
+
+def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard()):
     """
     Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
 
@@ -651,15 +676,15 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=Plot
     ydata = []
     zdata = []
 
-    gnu_files = os.listdir("gnufiles")
+    grid_files = get_grid_files(gridname)
 
     colors = []
 
-    for gnu_file in gnu_files:
-        splitted_no_fextension = ".".join(gnu_file.split('.')[:-2]).split("_")
+    for grid_file in grid_files:
+        kx = float(grid_file[0][0])
+        ky = float(grid_file[0][1])
 
-        kx = float(splitted_no_fextension[1])
-        ky = float(splitted_no_fextension[3])
+        gnu_file = grid_file[1]
 
         intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon)
 
@@ -678,15 +703,6 @@ def plot_3d_intersects(emin=4, emax=5, epsilon=0.01, colors=True, plotrange=Plot
                 R = np.clip(1 * (20 - absoluted) / 20, 0, 1)
                 G = np.clip(1 * (absoluted) / 20, 0, 1)
                 B = 0
-
-                # Debugging
-                # np_X = np.array(symmetry_points.X)
-                # np_point = np.array([kx, ky, kz])
-                # dist = np_X - np_point
-
-                # if dist.dot(dist) < 0.2:
-                    # print(f"image_{kx}_{ky}.png")
-                    # print(" - Energy", energy)
 
                 colors.append((R, G, B))
 
