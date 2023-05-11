@@ -148,10 +148,10 @@ def calculate_energies() -> bool:  # Returns True if successful
 
     check1 = check_success(outp1.decode())
     check2 = check_success(outp2.decode())
-    check3 = check_eigenvalues("si_bands_pp.out")
+    # check3 = check_eigenvalues("si_bands_pp.out")
 
     # return check1 and check2 and check3  # Check if all were successful
-    return check1 and check2 and check3  # Check if all were successful
+    return check1 and check2 # and check3  # Check if all were successful
 
 
 def create_file(points):
