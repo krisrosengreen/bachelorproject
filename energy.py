@@ -14,6 +14,7 @@ import math
 import re
 import subprocess
 import uuid  # Create unique filename
+import json  # Config file
 
 
 """
@@ -237,19 +238,16 @@ def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_p
             yield (kx, ky)
 
 
-def create_grid(gridname):
+def create_grid(gridname, kx_range=[0.45,0.55], ky_range=[0.45,0.55], kz_range=[0.45,0.55], kx_num_points=6, ky_num_points=6, kz_num_points=6):
     """
     Creates a grid defined by the function 'generate_grid'. Copy '.dat' and '.gnu' files to respective folders.
     Lastly, create images of the band structure.
     """
 
-    kx_range = [-1,1]
-    ky_range = [-1,1]
-    kz_range = [-1,1]
-
-    kx_num_points = 81
-    ky_num_points = 81
-    kz_num_points = 81
+    with open(f"config/{gridname}_config.json", "w") as f:
+        print(f"Writing config file to {gridname}_config.json")
+        data = {"kz_offset": kz_range[0]}
+        f.write(json.dumps(data))
 
     g = generate_grid(kx_range, ky_range, kz_range, kx_num_points, ky_num_points, kz_num_points)
 
@@ -640,7 +638,7 @@ def plot_brillouin_zone(ax):
 
 
 def get_grid_files(gridname):
-    with open(f"config/gridname", "r") as f:
+    with open(f"config/{gridname}", "r") as f:
         lines = f.readlines()
 
     # Remove empty lines
@@ -652,6 +650,13 @@ def get_grid_files(gridname):
         data.append([(float(vals[0]), float(vals[1])), vals[2]])
 
     return data
+
+
+def get_grid_kz_offset(gridname):
+    with open(f"config/{gridname}_config.json", "r") as f:
+        data = json.load(f)
+
+    return data["kz_offset"]
 
 
 def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard()):
@@ -677,6 +682,7 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
     zdata = []
 
     grid_files = get_grid_files(gridname)
+    kz_offset = get_grid_kz_offset(gridname)
 
     colors = []
 
@@ -686,10 +692,10 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
 
         gnu_file = grid_file[1]
 
-        intersections = find_intersections(f"gnufiles/" + gnu_file, emin=emin, emax=emax, epsilon=epsilon)
+        intersections = find_intersections(f"gnufiles/" + gnu_file + ".gnu", emin=emin, emax=emax, epsilon=epsilon)
 
         for intersection in intersections:
-            kz = intersection[0] - 1  # Offset by -1 because of way QE represents this
+            kz = intersection[0] + kz_offset  # Offset by because of way QE represents this
 
             if plotrange.check_within((kx, ky, kz)):
                 xdata.append(kx)
@@ -718,7 +724,7 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
     ax.set_zlabel("kz")
 
 
-def plot_3d_energy(energy, epsilon=0.01):
+def plot_3d_energy(gridname, energy, epsilon=0.01):
     """
     Plot all points on bands calculated near 'energy' and within 'epsilon'
 
@@ -737,22 +743,26 @@ def plot_3d_energy(energy, epsilon=0.01):
     ydata = []
     zdata = []
 
-    gnu_files = os.listdir("gnufiles")
+    data_files = get_grid_files(gridname)
+    kz_offset = get_grid_kz_offset(gridname)
 
-    for gnu_file in gnu_files:
-        splitted_no_fextension = ".".join(gnu_file.split('.')[:-2]).split("_")
+    print(data_files)
 
-        kx = float(splitted_no_fextension[1])
-        ky = float(splitted_no_fextension[3])
+    for data_file in data_files:
+        kx = data_file[0][0] 
+        ky = data_file[0][1]
+
+        gnu_file = data_file[1] + ".gnu"
 
         intersections = within_energy(f"gnufiles/" + gnu_file, energy)
 
         for intersection in intersections:
             xdata.append(kx)
             ydata.append(ky)
-            zdata.append(intersection[0])
+            zdata.append(intersection[0] + kz_offset)
 
     # plot_brillouin_zone(ax)
+    plot_symmetry_points(ax)
 
     ax.scatter3D(xdata, ydata, zdata)
     ax.set_xlabel("kx")

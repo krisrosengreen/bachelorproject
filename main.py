@@ -41,11 +41,11 @@ if __name__ == "__main__":
     plotrange = PlottingRange([-0, 1], [-0, 1], [-0, 1])  # (xlim, ylim, zlim)
 
     # check_convergence()
-    # plot_3d_intersects(emin=4, emax=valence_max+0.1, plotrange=plotrange, colors=False, epsilon=0.01)
-    # plot_3d_energy(6.2)
-    init_scf_calculation()
-    create_grid()
+    plot_3d_intersects("aroundL", emin=-15, emax=15, plotrange=plotrange, colors=False, epsilon=0.001)
+    # plot_3d_energy("aroundL", 5, epsilon=1)
+    # init_scf_calculation()
+    # create_grid("aroundL", kx_num_points=12, ky_num_points=12, kz_num_points=12)
     # read_dat_file()
 
 
-    # plt.show()
+    plt.show()
