@@ -2,6 +2,7 @@ __pycache__/*
 qefiles/datfiles/*
 qefiles/images/*
 qefiles/gnufiles/*
+qefiles/config/*
 qefiles/__pycache__/*
 qefiles/tmp/*
 qefiles/tmp/silicon.save/*

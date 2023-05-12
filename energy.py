@@ -687,8 +687,8 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
     colors = []
 
     for grid_file in grid_files:
-        kx = float(grid_file[0][0])
-        ky = float(grid_file[0][1])
+        kx = grid_file[0][0]
+        ky = grid_file[0][1]
 
         gnu_file = grid_file[1]
 

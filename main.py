@@ -18,25 +18,27 @@ def init_setup():
 
 
 def create_grids_around_points():
-    init_scf_calculation()
-    aroundL = [symmetry_points.L[0]-0.05, symmetry_points.L[1]+0.05]
-    aroundX = [symmetry_points.X[0]-0.05, symmetry_points.X[1]+0.05]
-    aroundW = [symmetry_points.W[0]-0.05, symmetry_points.W[1]+0.05]
-    aroundU = [symmetry_points.U[0]-0.05, symmetry_points.U[1]+0.05]
-    aroundGAMMA = [symmetry_points.gamma[0]-0.05, symmetry_points.gamma[1]+0.05]
+    GAMMA = symmetry_points.gamma
+    X = symmetry_points.X
+    U = symmetry_points.U
+    W = symmetry_points.W
+    L = symmetry_points.L
 
-    num_points=24
+    num_points=13
+    offset = 0.05
+    Loffset = lambda x: [x-0.05, x+0.05]
 
+    points = {"kx_num_points": num_points, "ky_num_points": num_points, "kz_num_points": num_points}
     print("Now aroundL 1/5")
-    create_grid("aroundL", kx_num_points=num_points, ky_num_points=num_points, kz_num_points=num_points, kx_range=aroundL, ky_range=aroundL, kz_range=aroundL)
-    print("Now aroundL 2/5")
-    create_grid("aroundX", kx_num_points=num_points, ky_num_points=num_points, kz_num_points=num_points, kx_range=aroundX, ky_range=aroundX, kz_range=aroundX)
-    print("Now aroundL 3/5")
-    create_grid("aroundW", kx_num_points=num_points, ky_num_points=num_points, kz_num_points=num_points, kx_range=aroundW, ky_range=aroundW, kz_range=aroundW)
-    print("Now aroundL 4/5")
-    create_grid("aroundU", kx_num_points=num_points, ky_num_points=num_points, kz_num_points=num_points, kx_range=aroundU, ky_range=aroundU, kz_range=aroundU)
-    print("Now aroundL 5/5")
-    create_grid("aroundGAMMA", kx_num_points=num_points, ky_num_points=num_points, kz_num_points=num_points, kx_range=aroundGAMMA, ky_range=aroundGAMMA, kz_range=aroundGAMMA)
+    create_grid("aroundL", kx_range=Loffset(L[0]), ky_range=Loffset(L[1]), kz_range=Loffset(L[2]), **points)
+    print("Now aroundX 2/5")
+    create_grid("aroundX", kx_range=Loffset(X[0]), ky_range=Loffset(X[1]), kz_range=Loffset(X[2]), **points)
+    print("Now aroundU 3/5")
+    create_grid("aroundU", kx_range=Loffset(U[0]), ky_range=Loffset(U[1]), kz_range=Loffset(U[2]), **points)
+    print("Now aroundW 4/5")
+    create_grid("aroundW", kx_range=Loffset(W[0]), ky_range=Loffset(W[1]), kz_range=Loffset(W[2]), **points)
+    print("Now aroundGAMMA 5/5")
+    create_grid("aroundGAMMA", kx_range=Loffset(GAMMA[0]), ky_range=Loffset(GAMMA[1]), kz_range=Loffset(GAMMA[2]), **points)
 
 
 if __name__ == "__main__":
@@ -60,16 +62,17 @@ if __name__ == "__main__":
     Look at nodal lines, energy etc
     """
 
-    create_grids_around_points()
+    # create_grids_around_points()
 
     plotrange = PlottingRange([-0, 1], [-0, 1], [-0, 1])  # (xlim, ylim, zlim)
-
+    plotrange = PlottingRange.standard()
+    
     # check_convergence()
-    # plot_3d_intersects("aroundL", emin=-15, emax=15, plotrange=plotrange, colors=False, epsilon=0.001)
+    plot_3d_intersects("aroundL", emin=4, emax=5, plotrange=plotrange, colors=False, epsilon=0.001)
     # plot_3d_energy("aroundL", 5, epsilon=1)
     # init_scf_calculation()
     # create_grid("aroundL", kx_num_points=12, ky_num_points=12, kz_num_points=12)
     # read_dat_file()
 
 
-    # plt.show()
+    plt.show()
