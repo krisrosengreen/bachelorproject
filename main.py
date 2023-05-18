@@ -52,7 +52,7 @@ if __name__ == "__main__":
     Conduction and valence, band minimum and maximum, respectively.
     """
 
-    # valence_max = valence_maximum()
+    valence_max = valence_maximum()
     # print("valence max:", valence_max)
     # conduct_min = conduction_minimum()
     # print("conduction min:", conduct_min)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     plotrange = PlottingRange.standard()
     
     # check_convergence()
-    plot_3d_intersects("aroundL", emin=4, emax=5, plotrange=plotrange, colors=False, epsilon=0.001)
+    plot_3d_intersects("aroundGAMMA", emin=3, emax=valence_max+0.1, plotrange=plotrange, colors=False, epsilon=0.001)
     # plot_3d_energy("aroundL", 5, epsilon=1)
     # init_scf_calculation()
     # create_grid("aroundL", kx_num_points=12, ky_num_points=12, kz_num_points=12)

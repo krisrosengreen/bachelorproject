@@ -56,6 +56,9 @@ def silicon_band_structure(init_scf_calc=True):
 
     combined_grid = delete_duplicate_neighbors(combined_grid)
 
+    # Valence maximum energy
+    valence_max = valence_maximum()
+
     # Create file
     create_file(combined_grid)
 
@@ -74,19 +77,28 @@ def silicon_band_structure(init_scf_calc=True):
         plt.axvline(x, lw=0.5, linestyle="--", c='k')
 
     # Create image
-    create_band_image(BANDS_GNUFILE, "figures/si_band.png")
+    # create_band_image(BANDS_GNUFILE, "figures/si_band.pdf")
+    bands = get_bands(BANDS_GNUFILE)
+
+    for band in bands:
+        plt.plot(band[:,0], band[:,1] - valence_max, linewidth=1, alpha=0.5, color='k')
+
+    plt.ylabel("E [eV]")
+    plt.savefig("figures/si_band.pdf")
+    plt.clf()
+    plt.cla()
 
 
 def VBM_figure():
     vbm_energy = valence_maximum()
     plot_3d_energy(vbm_energy)
-    plt.savefig("figures/valence_maximum_3d_plot.png")
+    plt.savefig("figures/valence_maximum_3d_plot.pdf")
 
 
 def CBM_figure():
     cbm_energy = conduction_minimum()
     plot_3d_energy(cbm_energy)
-    plt.savefig("figures/conduction_3d_plot.png")
+    plt.savefig("figures/conduction_3d_plot.pdf")
 
 
 def create_figures():
@@ -120,20 +132,20 @@ def dispersion_XW():
 
     calculate_energies()
 
-    create_band_image(BANDS_GNUFILE, "figures/dispersion_XW.png")
+    create_band_image(BANDS_GNUFILE, "figures/dispersion_XW.pdf")
 
 
 def nodal_lines():
     # Nodal line in Gamma-L direction
     plot_3d_intersects(emin=4, emax=6)
     plt.title(r"Energy range: [4, 5]. Nodal line in direction $\Gamma$-L")
-    plt.savefig("figures/NL_gamma-L.png")
+    plt.savefig("figures/NL_gamma-L.pdf")
 
 
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    # silicon_band_structure(init_scf_calc=False)
+    silicon_band_structure(init_scf_calc=False)
     # create_figures()
     # dispersion_XW()
-    nodal_lines()
+    # nodal_lines()

@@ -382,6 +382,32 @@ def optimize_lattice_constant(max_iterations=30) -> float:
     return best_val[0]
 
 
+def plot_bands_data(filename):
+    """
+    From filename plot gnu data
+    
+    Parameters
+    ----------
+    filename : str
+        Name of file to plot from
+    """
+    with open(filename) as f:
+        bands_data = f.read()
+
+    bands = bands_data.strip().split("\n\n")
+    floatify = lambda L: [float(L[0]), float(L[1])]
+
+    for band in bands:
+        lines = band.split("\n")
+        
+        # Convert line of two seperate, spaced numbers into numbers in List
+        xy_data = list(map(lambda s: floatify(s.strip().split()), lines))
+
+        xy_data_np = np.array(xy_data)
+        plt.plot(xy_data_np[:, 0], xy_data_np[:, 1], linewidth=1, alpha=0.5, color='k')
+
+
+
 def create_band_image(filename, output):
     """
     From file given by argument 'filename' create band structure image
@@ -395,19 +421,7 @@ def create_band_image(filename, output):
     output : str
         Name of file to save image as
     """
-    with open(filename) as f:
-        bands_data = f.read()
-
-    bands = bands_data.strip().split("\n\n")
-    floatify = lambda L: [float(L[0]), float(L[1])]
-
-    for band in bands:
-        lines = band.split("\n")
-
-        xy_data = list(map(lambda s: floatify(s.strip().split()), lines))
-
-        xy_data_np = np.array(xy_data)
-        plt.plot(xy_data_np[:, 0], xy_data_np[:, 1], linewidth=1, alpha=0.5, color='k')
+    plot_bands_data(filename)
 
     plt.savefig(output)
     plt.clf()
