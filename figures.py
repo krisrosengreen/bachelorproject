@@ -28,7 +28,7 @@ def delete_duplicate_neighbors(matrix):
         if c.dot(c) < 0.00001:
             indeces.append(i)
     new_array = []
-    for c,row in enumerate(matrix):
+    for c, row in enumerate(matrix):
         if c not in indeces:
             new_array.append(row)
 
@@ -81,7 +81,7 @@ def silicon_band_structure(init_scf_calc=True):
     bands = get_bands(BANDS_GNUFILE)
 
     for band in bands:
-        plt.plot(band[:,0], band[:,1] - valence_max, linewidth=1, alpha=0.5, color='k')
+        plt.plot(band[:, 0], band[:, 1] - valence_max, linewidth=1, alpha=0.5, color='k')
 
     plt.ylabel("E [eV]")
     plt.savefig("figures/si_band.pdf")
@@ -172,11 +172,12 @@ def highres_symmetry_points():
     files = ["aroundGAMMA", "aroundL", "aroundW", "aroundX", "aroundU"]
     emin = 2
     for file in files:
-        plot_3d_intersects(file, emin=2, emax=VALENCE_MAX)
-        plt.title(f"{file} at energy {emin}-{valence_max}")
-        plt.savefig(f"figures/{file}.pdf")
-        plt.clf()
-        plt.cla()
+        plot_3d_intersects(file, emin=4, emax=VALENCE_MAX)
+        plt.title(f"{file} at energy interval [{emin}, {VALENCE_MAX}]")
+        plt.show()
+        # plt.savefig(f"figures/{file}.pdf")
+        # plt.clf()
+        # plt.cla()
     print("Done!")
 
 

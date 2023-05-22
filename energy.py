@@ -205,7 +205,9 @@ def copy_dat_file(gridname, kx, ky):
         f.write(f"{kx} {ky} {unique_filename}\n")
 
 
-def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_points=41, ky_num_points=41, kz_num_points=41) -> tuple:
+def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1],
+                  kz_range=[-1, 1], kx_num_points=41,
+                  ky_num_points=41, kz_num_points=41) -> tuple:
     """
     Creates a 3D grid. For each point create Quantum Espresso file.
 
@@ -466,7 +468,8 @@ def read_dat_file(filename) -> list:
     return bands
 
 
-def find_intersections(filename, epsilon=0.1, emin=1, emax=VALENCE_MAX) -> list:
+def find_intersections(filename, epsilon=0.1,
+                       emin=1, emax=VALENCE_MAX) -> list:
     """
     Find intersections in 'filename' within energy-min and energy-max
     that are within an energy threshold.
@@ -689,7 +692,7 @@ def get_grid_kz_offset(gridname):
 
 
 def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
-                       colors=True, plotrange=PlottingRange.standard()):
+                       colors=False, plotrange=PlottingRange.standard()):
     """
     Plot points where bands cross or overlap, within
     energies emin (Energy-minimum) and emax (Energy-max)
@@ -749,9 +752,9 @@ def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
     plot_symmetry_points(ax)
 
     if colors:
-        ax.scatter3D(xdata, ydata, zdata, s=2, c=L_colors)
+        ax.scatter3D(xdata, ydata, zdata, s=1, c=L_colors)
     else:
-        ax.scatter3D(xdata, ydata, zdata, s=2)
+        ax.scatter3D(xdata, ydata, zdata, s=1)
     ax.set_xlabel(r"kx [$\frac{2\pi}{a}$]")
     ax.set_ylabel(r"ky [$\frac{2\pi}{a}$]")
     ax.set_zlabel(r"kz [$\frac{2\pi}{a}$]")
@@ -814,7 +817,8 @@ def valence_maximum(show=False):
     create_file(grid)
     calculate_energies()
 
-    # Plot bands and get the band with valence maximum and corresponding max value
+    # Plot bands and get the band with valence maximum and corresponding
+    # max value
     bands = get_bands(BANDS_GNUFILE)
     for c, band in enumerate(bands):
         col = "r"
