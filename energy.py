@@ -890,6 +890,9 @@ def size_point(matrix, point: int) -> float:
 
 
 def plot_symmetry_points(ax):
+    """
+    Plot and label symmetry points in the first Brillouin zone.
+    """
     L = symmetry_points.L
     X = symmetry_points.X
     W = symmetry_points.W
