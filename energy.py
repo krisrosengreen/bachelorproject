@@ -1,18 +1,17 @@
-from settings import *
-from utils import *
-from copy import deepcopy
+from settings import (FILENAME, PP_FILENAME, FILEOUTPUT,
+                      BANDS_GNUFILE, AUTOGRID_FILENAME, OPTLATTICE_FILENAME,
+                      TEMPLATE, VALENCE_MAX, PP_FILEOUTPUT)
+from utils import (get_values, fcc_points, PlottingRange)
 from scipy.optimize import fmin
-from subprocess import check_output
-from mpl_toolkits import mplot3d
 from utils import inputfile_row_format
-from datetime import timedelta
+from datetime import timedelta  # Calculation ETAs
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+import os  # File directory functions
 import time
 import math
-import re
-import subprocess
+import re  # Parsing numbers from text
+import subprocess  # Running CLI QE commands
 import uuid  # Create unique filename
 import json  # Config file
 
@@ -24,11 +23,11 @@ Useful values
 
 class symmetry_points:
     # kx, ky, kz
-    L = [0.5,0.5,0.5]
-    gamma = [0,0,0]
-    X = [0,1,0]
-    W = [0.5,1,0]
-    U = [0.25,1,0.25]
+    L = [0.5, 0.5, 0.5]
+    gamma = [0, 0, 0]
+    X = [0, 1, 0]
+    W = [0.5, 1, 0]
+    U = [0.25, 1, 0.25]
 
 
 """
@@ -38,7 +37,8 @@ Interface Quantum Espresso software
 
 def get_string_within(s, char1, char2) -> str:
     """
-    Find substring in string 's' that have starting char 'char1' and ending char 'char2'
+    Find substring in string 's' that have starting char 'char1' and
+    ending char 'char2'
 
     Parameters
     ----------
@@ -51,7 +51,6 @@ def get_string_within(s, char1, char2) -> str:
     char2 : str
         The ending character
     """
-    string_builder = ""
 
     start = -1
     end = -1
@@ -69,7 +68,8 @@ def get_string_within(s, char1, char2) -> str:
 
 def check_eigenvalues(filename) -> bool:  # There has to be 8 eigenvalues
     """
-    Check that there are no more or no less than 8 eigenvalues in file 'filename'
+    Check that there are no more or no less than 8 eigenvalues
+    in file 'filename'
 
     Parameters
     ----------
@@ -94,14 +94,15 @@ def check_eigenvalues(filename) -> bool:  # There has to be 8 eigenvalues
             count2 = int(count2_char)
 
             if count1 == current+1 or count2 == current+1:
-                current+= count2-count1
-                current+=1
+                current += count2-count1
+                current += 1
             else:
                 if not bad_value:
                     print("Bad eigenvalue!")
                     print("...")
                     print("\n".join(energies[index-5:index]))
-                    print(energies[index], count1, count2, "expected", current+1 ,"\r **")
+                    print(energies[index], count1, count2,
+                          "expected", current+1, "\r **")
                     print("\n".join(energies[index+1:index+5]))
                     print("...")
                     bad_value = True
@@ -128,18 +129,20 @@ def check_success(espresso_output) -> bool:
 
 def calculate_energies() -> bool:  # Returns True if successful
     """
-    Run Quantum Espresso console commands to calculate energies from Quantum Espresso
-    input file 'si.bandspy.in'
+    Run Quantum Espresso console commands to calculate
+    energies from Quantum Espresso input file 'si.bandspy.in'
     """
 
     # First make sure that TMP folder exists
-    assert os.path.isdir("tmp"), "No tmp folder found! Remember to do initial scf calculation!"
+    assert os.path.isdir("tmp"), "Remember to do initial scf calculation!"
 
-    process1 = subprocess.Popen(["pw.x", "-i", FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process1 = subprocess.Popen(["pw.x", "-i", FILENAME],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process1.wait()
-    process2 = subprocess.Popen(["bands.x", "-i", PP_FILENAME], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    outp1,_ = process1.communicate()
-    outp2,_ = process2.communicate()
+    process2 = subprocess.Popen(["bands.x", "-i", PP_FILENAME],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    outp1, _ = process1.communicate()
+    outp2, _ = process2.communicate()
 
     with open(FILEOUTPUT, "wb") as f:
         f.write(outp1)
@@ -151,7 +154,7 @@ def calculate_energies() -> bool:  # Returns True if successful
     # check3 = check_eigenvalues("si_bands_pp.out")
 
     # return check1 and check2 and check3  # Check if all were successful
-    return check1 and check2 # and check3  # Check if all were successful
+    return check1 and check2  # and check3  # Check if all were successful
 
 
 def create_file(points):
@@ -179,8 +182,8 @@ def create_file(points):
 
 def copy_dat_file(gridname, kx, ky):
     """
-    Copy 'si_bands.dat' file to folder qefiles/datfiles/ and change name to contain
-    kx and ky values.
+    Copy 'si_bands.dat' file to folder qefiles/datfiles/ and change name
+    to contain kx and ky values.
 
     Similarly, copy 'si_bands.dat.gnu' to qefiles/gnufiles/
 
@@ -190,7 +193,7 @@ def copy_dat_file(gridname, kx, ky):
         Name of file to save image as
     """
 
-    unique_filename = uuid.uuid4().hex;
+    unique_filename = uuid.uuid4().hex
 
     os.system(f"cp si_bands.dat datfiles/{unique_filename}")
     os.system(f"cp {BANDS_GNUFILE} gnufiles/{unique_filename}.gnu")
@@ -238,9 +241,12 @@ def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1], kz_range=[-1, 1], kx_num_p
             yield (kx, ky)
 
 
-def create_grid(gridname, kx_range=[0.45,0.55], ky_range=[0.45,0.55], kz_range=[0.45,0.55], kx_num_points=6, ky_num_points=6, kz_num_points=6):
+def create_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
+                kz_range=[0.45, 0.55], kx_num_points=6,
+                ky_num_points=6, kz_num_points=6):
     """
-    Creates a grid defined by the function 'generate_grid'. Copy '.dat' and '.gnu' files to respective folders.
+    Creates a grid defined by the function 'generate_grid'.
+    Copy '.dat' and '.gnu' files to respective folders.
     Lastly, create images of the band structure.
     """
 
@@ -249,53 +255,50 @@ def create_grid(gridname, kx_range=[0.45,0.55], ky_range=[0.45,0.55], kz_range=[
         data = {"kz_offset": kz_range[0]}
         f.write(json.dumps(data))
 
-    g = generate_grid(kx_range, ky_range, kz_range, kx_num_points, ky_num_points, kz_num_points)
+    g = generate_grid(kx_range, ky_range, kz_range,
+                      kx_num_points, ky_num_points, kz_num_points)
 
     count = 0
     while ret := next(g, None):
-        (i,j)=ret
+        (i, j) = ret
         time_start = time.time()
 
-        calculation_success = calculate_energies()
-        create_band_image(BANDS_GNUFILE, f"images/{gridname}_image_{i}_{j}.png")
+        calculate_energies()
+        create_band_image(BANDS_GNUFILE,
+                          f"images/{gridname}_image_{i}_{j}.png")
         copy_dat_file(gridname, kx=i, ky=j)
 
         time_taken = time.time() - time_start
         remaining_calcs = kx_num_points*ky_num_points - count
         secs_remain = math.floor(time_taken * remaining_calcs)
-        print(f"\rCurrent [{i:.4f}, {j:.4f}] - {count}/{kx_num_points*ky_num_points} - Time left {str(timedelta(seconds=secs_remain))}\t", end='')
+
+        print(f"\rCurrent [{i:.4f}, {j:.4f}] - \
+              {count}/{kx_num_points*ky_num_points}\
+              - Time left {str(timedelta(seconds=secs_remain))}\t", end='')
+
         count += 1
     print("\nDone!")
 
 
-def read_dat_file():
-    with open("si_bands.dat", "r") as f:
-        lines = f.readlines()
-
-    points = []
-
-    for i in range(1, len(lines), 2):
-        kx,ky,kz = list(map(float, lines[i].split()))
-        #print(kx, ky, kz)
-        points.append((kx,ky,kz))
-
-    points = np.array(points)
-
-    fig = plt.figure()
-    ax = plt.axes(projection='3d')
-    ax.scatter3D(points[:, 0], points[:, 1], points[:, 2])
-    ax.set_xlabel("kx")
-    ax.set_ylabel("ky")
-    ax.set_zlabel("kz")
-
-
 def init_scf_calculation():
+    """
+    Do an initial SCF calculation.
+    This must be done before any bands calculations.
+    """
     print("Beginning initial scf calculation!")
     stdout, stderr = scf_calculation(AUTOGRID_FILENAME)
     print("Done!")
 
 
 def scf_calculation(filename):
+    """
+    Perform an SCF calculation on QE input file
+
+    Parameters
+    ----------
+    filename : str
+        Name of QE input file
+    """
     process = subprocess.Popen(['pw.x', '-i', filename],
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
@@ -309,7 +312,8 @@ Get useful stuff out of code above
 
 def get_total_energy(filename):
     """
-    Get the total energy of from a QE scf calculation in a given output file "filename"
+    Get the total energy of from a QE scf calculation in
+    a given output file "filename"
 
     Parameters
     ----------
@@ -322,7 +326,7 @@ def get_total_energy(filename):
     """
     (stdout, stderr) = scf_calculation(filename)
     lines = stdout.decode().split("\n")
-    assert check_success(stdout.decode()), "Not successful in calculating energy!"
+    assert check_success(stdout.decode()), "Unsuccessful in calculating energy"
     for line in lines:
         if "total energy" in line:
             values = get_values(line)
@@ -353,8 +357,12 @@ def file_change_line(filename, numline, newline):
 def get_lattice_energy(lattice_const):
     lattice_const = lattice_const[0]
     LATTICE_CONST_LINE = 9
-    const_format_line = lambda val: f"    celldm(1)={val},\n"
-    file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(lattice_const))
+
+    def const_format_line(val):
+        return f"    celldm(1)={val},\n"
+
+    file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE,
+                     const_format_line(lattice_const))
     energy = get_total_energy(OPTLATTICE_FILENAME)
 
     print("LC:", lattice_const, "E:", energy)
@@ -370,7 +378,8 @@ def optimize_lattice_constant(max_iterations=30) -> float:
     Parameters
     ----------
     max_iterations : int
-        Maximum number of iterations to go through to find the best lattice constant
+        Maximum number of iterations to go through
+        to find the best lattice constant
 
     Returns
     -------
@@ -385,7 +394,7 @@ def optimize_lattice_constant(max_iterations=30) -> float:
 def plot_bands_data(filename):
     """
     From filename plot gnu data
-    
+
     Parameters
     ----------
     filename : str
@@ -395,17 +404,19 @@ def plot_bands_data(filename):
         bands_data = f.read()
 
     bands = bands_data.strip().split("\n\n")
-    floatify = lambda L: [float(L[0]), float(L[1])]
+
+    def floatify(L):
+        return [float(L[0]), float(L[1])]
 
     for band in bands:
         lines = band.split("\n")
-        
+
         # Convert line of two seperate, spaced numbers into numbers in List
         xy_data = list(map(lambda s: floatify(s.strip().split()), lines))
 
         xy_data_np = np.array(xy_data)
-        plt.plot(xy_data_np[:, 0], xy_data_np[:, 1], linewidth=1, alpha=0.5, color='k')
-
+        plt.plot(xy_data_np[:, 0], xy_data_np[:, 1],
+                 linewidth=1, alpha=0.5, color='k')
 
 
 def create_band_image(filename, output):
@@ -448,17 +459,17 @@ def read_dat_file(filename) -> list:
             bands.append(band)
             band = []
         else:
-            text_energies = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', line)
-            energies = list(map(float, text_energies))
+            Es = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', line)
+            energies = list(map(float, Es))
             band.append(energies)
 
     return bands
 
 
-def find_intersections(filename, epsilon=0.1, emin=1, emax=3) -> list:
+def find_intersections(filename, epsilon=0.1, emin=1, emax=VALENCE_MAX) -> list:
     """
-    Find intersections in 'filename' within energy-min and energy-max that are within
-    an energy threshold
+    Find intersections in 'filename' within energy-min and energy-max
+    that are within an energy threshold.
 
     Parameters
     ----------
@@ -514,7 +525,6 @@ def within_energy(filename, energy, epsilon=0.1) -> list:
 
     for band1 in bands:
 
-        # idxs = np.argwhere(np.diff(np.sign(band1[:, 1] - band2[:, 1]))).flatten()
         idxs = np.where(np.abs(band1[:, 1] - energy) < epsilon)[0]
 
         for idx in idxs:
@@ -536,7 +546,9 @@ def get_bands(filename) -> list:
         bands_data = f.read()
 
     txt_bands = bands_data.strip().split("\n\n")
-    floatify = lambda L: [float(L[0]), float(L[1])]
+
+    def floatify(L):
+        return [float(L[0]), float(L[1])]
 
     bands = []
 
@@ -562,9 +574,10 @@ def plot_bands_and_intersections(filename):
     """
     with open(filename) as f:
         bands_data = f.read()
-
     bands = bands_data.strip().split("\n\n")
-    floatify = lambda L: [float(L[0]), float(L[1])]
+
+    def floatify(L):
+        return [float(L[0]), float(L[1])]
 
     for band in bands:
         lines = band.split("\n")
@@ -572,21 +585,23 @@ def plot_bands_and_intersections(filename):
         xy_data = list(map(lambda s: floatify(s.strip().split()), lines))
 
         xy_data_np = np.array(xy_data)
-        plt.plot(xy_data_np[:, 0], xy_data_np[:, 1], linewidth=1, alpha=0.5, color='k')
+        plt.plot(xy_data_np[:, 0], xy_data_np[:, 1],
+                 linewidth=1, alpha=0.5, color='k')
 
     intersects = find_intersections(filename)
     if len(intersects) != 0:
         np_intersecs = np.array(intersects)
 
-        xs_int = np_intersecs[:,0]
-        ys_int = np_intersecs[:,1]
+        xs_int = np_intersecs[:, 0]
+        ys_int = np_intersecs[:, 1]
 
         plt.scatter(xs_int, ys_int)
 
 
 def create_image(output_name):
     """
-    From file 'si_bands.dat.gnu' create band structure image and save file to argument 'output_name'
+    From file 'si_bands.dat.gnu' create band structure image
+    and save file to argument 'output_name'
 
     Parameters
     ----------
@@ -617,10 +632,10 @@ def check_convergence(epsilon_convergence=0.05):
     epsilon_convergence : float
         The difference between points must be below this threshold to converge
     """
-    ecutwfcs = [5,10,15,20,25,30,35,40,45,50,55,60]
+    ecutwfcs = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
     g = generate_grid()
     while kpair := next(g, None):
-        (i,j) = kpair
+        (i, j) = kpair
         energies = []
         for ecutwfc in ecutwfcs:
             with open(FILENAME, 'r') as f:
@@ -635,7 +650,7 @@ def check_convergence(epsilon_convergence=0.05):
             energy_str = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', str_energy_line)[0]
             energy = float(energy_str)
             energies.append(energy)
-            print(f"\rConvergence testing k-pair (i={i}, j={j}) - E={energy}... ", end='')
+            print(f"\rConvergence testing k-pair (i={i}, j={j}) - E={energy}...", end='')
             if len(energies) >= 2:
                 if abs(energies[-1] - energies[-2]) < epsilon_convergence:
                     break
@@ -658,7 +673,7 @@ def get_grid_files(gridname):
     # Remove empty lines
     lines = list(filter(lambda x: len(x) != 0, lines))
     data = []
-    
+
     for line in lines:
         vals = line.split()
         data.append([(float(vals[0]), float(vals[1])), vals[2]])
@@ -673,9 +688,11 @@ def get_grid_kz_offset(gridname):
     return data["kz_offset"]
 
 
-def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plotrange=PlottingRange.standard()):
+def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
+                       colors=True, plotrange=PlottingRange.standard()):
     """
-    Plot points where bands cross or overlap, within energies emin (Energy-minimum) and emax (Energy-max)
+    Plot points where bands cross or overlap, within
+    energies emin (Energy-minimum) and emax (Energy-max)
 
     Parameters
     ----------
@@ -688,7 +705,6 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
     epsilon : float
         The threshold energy difference between bands
     """
-    fig = plt.figure()
     ax = plt.axes(projection='3d')
 
     xdata = []
@@ -706,10 +722,13 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
 
         gnu_file = grid_file[1]
 
-        intersections = find_intersections(f"gnufiles/" + gnu_file + ".gnu", emin=emin, emax=emax, epsilon=epsilon)
+        intersections = find_intersections("gnufiles/" + gnu_file + ".gnu",
+                                           emin=emin, emax=emax,
+                                           epsilon=epsilon)
 
         for intersection in intersections:
-            kz = intersection[0] + kz_offset  # Offset by because of way QE represents this
+            # Offset by because of way QE represents this
+            kz = intersection[0] + kz_offset
 
             if plotrange.check_within((kx, ky, kz)):
                 xdata.append(kx)
@@ -750,7 +769,6 @@ def plot_3d_energy(gridname, energy, epsilon=0.01):
     epsilon : float
         The energy difference threshold
     """
-    fig = plt.figure()
     ax = plt.axes(projection='3d')
 
     xdata = []
@@ -763,12 +781,12 @@ def plot_3d_energy(gridname, energy, epsilon=0.01):
     print(data_files)
 
     for data_file in data_files:
-        kx = data_file[0][0] 
+        kx = data_file[0][0]
         ky = data_file[0][1]
 
         gnu_file = data_file[1] + ".gnu"
 
-        intersections = within_energy(f"gnufiles/" + gnu_file, energy)
+        intersections = within_energy("gnufiles/" + gnu_file, energy)
 
         for intersection in intersections:
             xdata.append(kx)
@@ -794,7 +812,7 @@ def valence_maximum(show=False):
     num_points = 20
     grid = np.ones((20, 3)) * np.linspace(0, 0.5, num_points)[np.newaxis].T
     create_file(grid)
-    success = calculate_energies()
+    calculate_energies()
 
     # Plot bands and get the band with valence maximum and corresponding max value
     bands = get_bands(BANDS_GNUFILE)
@@ -821,9 +839,10 @@ def conduction_minimum(show=False):
     grid = np.zeros((num_points, 3))
     grid[:, 0] = np.linspace(0, 1, num_points)
     create_file(grid)
-    success = calculate_energies()
+    calculate_energies()
 
-    # Plot bands and get the band with valence maximum and corresponding max value
+    # Plot bands and get the band with valence maximum and corresponding
+    # max value
     bands = get_bands(BANDS_GNUFILE)
     for c, band in enumerate(bands):
         col = "r"
@@ -841,7 +860,7 @@ def band_gap():
     valence_max = valence_maximum()
     conduct_min = conduction_minimum()
     band_gap = conduct_min - valence_max
-    print("Band gap:", band_gap)  # This becomes 2.23 eV - Which is very weird? This value should be underestimated
+    print("Band gap:", band_gap)
 
 
 def size_point(matrix, point: int) -> float:
@@ -852,7 +871,8 @@ def size_point(matrix, point: int) -> float:
     matrix : list
         List containing the points to calculate energies of
     point : int
-        The index of the point to which the representational value is to be calculated
+        The index of the point to which the
+        representational value is to be calculated
     Return
     ------
     float : The representational value
@@ -872,7 +892,7 @@ def plot_symmetry_points(ax):
     U = symmetry_points.U
     gamma = symmetry_points.gamma
 
-    points = [L,X,W,U,gamma]
+    points = [L, X, W, U, gamma]
     labels = ["L", "X", "W", "U", r"$\Gamma$"]
     for point, label in zip(points, labels):
         ax.scatter3D(point[0], point[1], point[2], c="r", s=5)

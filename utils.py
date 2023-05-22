@@ -13,14 +13,15 @@ class PlottingRange():
     @staticmethod
     def standard():
         """
-        A standard instance of this class with high values in the limits such that all
-        values are plotted
+        A standard instance of this class with high values
+        in the limits such that all values are plotted
 
         Return
         ------
-        PlottingRange : Returns standard instance of this class that allows for all values
+        PlottingRange : Returns standard instance of
+                        this class that allows for all values
         """
-        return PlottingRange([-100, 100],[-100, 100],[-100, 100])
+        return PlottingRange([-100, 100], [-100, 100], [-100, 100])
 
     def __init__(self, xlim: list, ylim: list, zlim: list):
         """
@@ -55,7 +56,6 @@ class PlottingRange():
         """
         return (val >= lim[0]) and (val <= lim[1])
 
-
     def check_within(self, point: tuple) -> bool:
         """
         Check if point is within limits
@@ -69,7 +69,10 @@ class PlottingRange():
         ------
         bool : Returns whether or not point is within limit
         """
-        return self._within(point[0], self.xlim) and self._within(point[1], self.ylim) and self._within(point[2], self.zlim)
+        cond1 = self._within(point[0], self.xlim)
+        cond2 = self._within(point[1], self.ylim)
+        cond3 = self._within(point[2], self.zlim)
+        return cond1 and cond2 and cond3
 
 
 def inputfile_row_format(row, row_num) -> str:
@@ -85,15 +88,15 @@ def inputfile_row_format(row, row_num) -> str:
         The row-number this row corresponds to
     """
     FD = FORMATTING_DECIMALS
-    return f"   {row[0]:.{FD}f} {row[1]:.{FD}f} {row[2]:.{FD}f} {row_num: >3}\n"
+    return f"\t{row[0]:.{FD}f} {row[1]:.{FD}f} {row[2]:.{FD}f} {row_num: >3}\n"
 
 
 def fcc_points() -> list:
     # Code taken from
     # http://staff.ustc.edu.cn/~zqj/posts/howto-plot-brillouin-zone/
     cell = np.array([[0.0, 1, 1],
-                 [1, 0.0, 1],
-                 [1, 1, 0.0]])
+                    [1, 0.0, 1],
+                    [1, 1, 0.0]])
 
     cell = np.asarray(cell, dtype=float)
     assert cell.shape == (3, 3)
@@ -101,7 +104,6 @@ def fcc_points() -> list:
     px, py, pz = np.tensordot(cell, np.mgrid[-1:2, -1:2, -1:2], axes=[0, 0])
     points = np.c_[px.ravel(), py.ravel(), pz.ravel()]
 
-    from scipy.spatial import Voronoi
     vor = Voronoi(points)
 
     bz_facets = []
@@ -115,9 +117,9 @@ def fcc_points() -> list:
 
     for pid, rid in zip(vor.ridge_points, vor.ridge_vertices):
         # WHY 13 ????
-        # The Voronoi ridges/facets are perpendicular to the lines drawn between the
-        # input points. The 14th input point is [0, 0, 0].
-        if(pid[0] == 13 or pid[1] == 13):
+        # The Voronoi ridges/facets are perpendicular to the lines drawn
+        # between the input points. The 14th input point is [0, 0, 0].
+        if (pid[0] == 13 or pid[1] == 13):
             bz_ridges.append(vor.vertices[np.r_[rid, [rid[0]]]])
             bz_facets.append(vor.vertices[rid])
             bz_vertices += rid
@@ -135,6 +137,7 @@ def get_values(text) -> list:
     text : str
         Str fromwhich values are found
     """
-    text_values = re.findall(r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', text)
+    reg_str = r'[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?'
+    text_values = re.findall(reg_str, text)
     values = list(map(float, text_values))
     return values

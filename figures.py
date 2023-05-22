@@ -143,8 +143,7 @@ def nodal_lines():
 
 
 def trivial_nodal_lines():
-    valence_max = valence_maximum()
-    plot_3d_intersects("grid100points", emin=-12, emax=valence_max+0.1, colors=False, epsilon=0.0001)
+    plot_3d_intersects("grid100points", emin=-12, emax=VALENCE_MAX+0.1, colors=False, epsilon=0.0001)
     plt.savefig("figures/trivial_nodal_lines.pdf")
     plt.cla()
     plt.clf()
@@ -169,10 +168,23 @@ def lattice_constant_optimize():
     plt.savefig("figures/lattice_constant.pdf")
 
 
+def highres_symmetry_points():
+    files = ["aroundGAMMA", "aroundL", "aroundW", "aroundX", "aroundU"]
+    emin = 2
+    for file in files:
+        plot_3d_intersects(file, emin=2, emax=VALENCE_MAX)
+        plt.title(f"{file} at energy {emin}-{valence_max}")
+        plt.savefig(f"figures/{file}.pdf")
+        plt.clf()
+        plt.cla()
+    print("Done!")
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    lattice_constant_optimize()
+    highres_symmetry_points()
+    # lattice_constant_optimize()
     # trivial_nodal_lines()
     # silicon_band_structure(init_scf_calc=False)
     # create_figures()

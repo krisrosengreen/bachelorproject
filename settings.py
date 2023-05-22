@@ -9,3 +9,5 @@ PP_FILENAME = "si_bands_pp.in"
 PP_FILEOUTPUT = "si_bands_pp.out"
 
 BANDS_GNUFILE = "si_bands.dat.gnu"
+
+VALENCE_MAX = 5.9179
