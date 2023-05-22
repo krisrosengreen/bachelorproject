@@ -350,6 +350,18 @@ def file_change_line(filename, numline, newline):
         f.writelines(lines)
 
 
+def get_lattice_energy(lattice_const):
+    lattice_const = lattice_const[0]
+    LATTICE_CONST_LINE = 9
+    const_format_line = lambda val: f"    celldm(1)={val},\n"
+    file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(lattice_const))
+    energy = get_total_energy(OPTLATTICE_FILENAME)
+
+    print("LC:", lattice_const, "E:", energy)
+
+    return energy
+
+
 def optimize_lattice_constant(max_iterations=30) -> float:
     """
     Find the optimal lattice constant that gives the lowest energy.
@@ -365,18 +377,6 @@ def optimize_lattice_constant(max_iterations=30) -> float:
     float
         The best lattice constant the program could find
     """
-
-    def get_lattice_energy(lattice_const):
-        lattice_const = lattice_const[0]
-        LATTICE_CONST_LINE = 9
-        const_format_line = lambda val: f"    celldm(1)={val},\n"
-        file_change_line(OPTLATTICE_FILENAME, LATTICE_CONST_LINE, const_format_line(lattice_const))
-        energy = get_total_energy(OPTLATTICE_FILENAME)
-
-        print("LC:", lattice_const, "E:", energy)
-
-        return energy
-
     best_val = fmin(get_lattice_energy, x0=11, maxiter=max_iterations)
 
     return best_val[0]
@@ -698,7 +698,7 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
     grid_files = get_grid_files(gridname)
     kz_offset = get_grid_kz_offset(gridname)
 
-    colors = []
+    L_colors = []
 
     for grid_file in grid_files:
         kx = grid_file[0][0]
@@ -724,18 +724,18 @@ def plot_3d_intersects(gridname, emin=4, emax=5, epsilon=0.01, colors=True, plot
                 G = np.clip(1 * (absoluted) / 20, 0, 1)
                 B = 0
 
-                colors.append((R, G, B))
+                L_colors.append((R, G, B))
 
     # plot_brillouin_zone(ax)
     plot_symmetry_points(ax)
 
     if colors:
-        ax.scatter3D(xdata, ydata, zdata, s=2, c=colors)
+        ax.scatter3D(xdata, ydata, zdata, s=2, c=L_colors)
     else:
         ax.scatter3D(xdata, ydata, zdata, s=2)
-    ax.set_xlabel("kx")
-    ax.set_ylabel("ky")
-    ax.set_zlabel("kz")
+    ax.set_xlabel(r"kx [$\frac{2\pi}{a}$]")
+    ax.set_ylabel(r"ky [$\frac{2\pi}{a}$]")
+    ax.set_zlabel(r"kz [$\frac{2\pi}{a}$]")
 
 
 def plot_3d_energy(gridname, energy, epsilon=0.01):

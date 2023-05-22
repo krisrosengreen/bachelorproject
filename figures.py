@@ -142,10 +142,39 @@ def nodal_lines():
     plt.savefig("figures/NL_gamma-L.pdf")
 
 
+def trivial_nodal_lines():
+    valence_max = valence_maximum()
+    plot_3d_intersects("grid100points", emin=-12, emax=valence_max+0.1, colors=False, epsilon=0.0001)
+    plt.savefig("figures/trivial_nodal_lines.pdf")
+    plt.cla()
+    plt.clf()
+
+
+def lattice_constant_optimize():
+    L = []
+    wrap_func = get_lattice_energy
+
+    def wrapper(x):
+        resp = wrap_func(x)
+        L.append([x, resp])
+
+        return resp
+
+    resp = fmin(wrapper, x0=11, maxiter=30)
+    npL = np.array(L)
+
+    plt.scatter(npL[:, 0], npL[:, 1])
+    plt.ylabel("Total Energy [eV]")
+    plt.xlabel("Lattice Constant")
+    plt.savefig("figures/lattice_constant.pdf")
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    silicon_band_structure(init_scf_calc=False)
+    lattice_constant_optimize()
+    # trivial_nodal_lines()
+    # silicon_band_structure(init_scf_calc=False)
     # create_figures()
     # dispersion_XW()
     # nodal_lines()
