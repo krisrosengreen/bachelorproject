@@ -10,7 +10,7 @@ plt.rcParams["figure.figsize"]=(8, 6)
 
 
 def init_setup():
-    required_folders = ["images", "datfiles", "gnufiles"]
+    required_folders = ["images", "datfiles", "gnufiles", "config"]
     items = os.listdir()
     for rf in required_folders:
         if rf not in items:
@@ -24,9 +24,9 @@ def create_grids_around_points():
     W = symmetry_points.W
     L = symmetry_points.L
 
-    num_points=13
-    offset = 0.05
-    Loffset = lambda x: [x-0.05, x+0.05]
+    num_points=61
+    offset = 0.1
+    Loffset = lambda x: [x-offset, x+offset]
 
     points = {"kx_num_points": num_points, "ky_num_points": num_points, "kz_num_points": num_points}
     print("Now aroundL 1/5")
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     Conduction and valence, band minimum and maximum, respectively.
     """
 
-    valence_max = valence_maximum()
+    # valence_max = valence_maximum()
     # print("valence max:", valence_max)
     # conduct_min = conduction_minimum()
     # print("conduction min:", conduct_min)
@@ -62,17 +62,17 @@ if __name__ == "__main__":
     Look at nodal lines, energy etc
     """
 
-    # create_grids_around_points()
 
     plotrange = PlottingRange([-0, 1], [-0, 1], [-0, 1])  # (xlim, ylim, zlim)
     plotrange = PlottingRange.standard()
-    
+
     # check_convergence()
-    plot_3d_intersects("aroundGAMMA", emin=3, emax=valence_max+0.1, plotrange=plotrange, colors=False, epsilon=0.001)
+    # plot_3d_intersects("aroundGAMMA", emin=3, emax=valence_max+0.1, plotrange=plotrange, colors=False, epsilon=0.001)
     # plot_3d_energy("aroundL", 5, epsilon=1)
     # init_scf_calculation()
+    create_grids_around_points()
     # create_grid("aroundL", kx_num_points=12, ky_num_points=12, kz_num_points=12)
     # read_dat_file()
 
 
-    plt.show()
+    # plt.show()
