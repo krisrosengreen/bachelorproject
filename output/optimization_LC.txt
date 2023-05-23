@@ -1,0 +1,68 @@
+Total energy line:      total energy              =     -15.71693206 Ry
+LC: 11.0 E: -15.71693206
+Total energy line:      total energy              =     -15.67329862 Ry
+LC: 11.55 E: -15.67329862
+Total energy line:      total energy              =     -15.73900570 Ry
+LC: 10.45 E: -15.7390057
+Total energy line:      total energy              =     -15.72230534 Ry
+LC: 9.899999999999999 E: -15.72230534
+Total energy line:      total energy              =     -15.72230534 Ry
+LC: 9.899999999999999 E: -15.72230534
+Total energy line:      total energy              =     -15.73682231 Ry
+LC: 10.174999999999999 E: -15.73682231
+Total energy line:      total energy              =     -15.73159926 Ry
+LC: 10.725 E: -15.73159926
+Total energy line:      total energy              =     -15.73927364 Ry
+LC: 10.3125 E: -15.73927364
+Total energy line:      total energy              =     -15.73682231 Ry
+LC: 10.175 E: -15.73682231
+Total energy line:      total energy              =     -15.73945843 Ry
+LC: 10.38125 E: -15.73945843
+Total energy line:      total energy              =     -15.73900570 Ry
+LC: 10.45 E: -15.7390057
+Total energy line:      total energy              =     -15.73944922 Ry
+LC: 10.346875 E: -15.73944922
+Total energy line:      total energy              =     -15.73931076 Ry
+LC: 10.415624999999999 E: -15.73931076
+Total energy line:      total energy              =     -15.73947393 Ry
+LC: 10.3640625 E: -15.73947393
+Total energy line:      total energy              =     -15.73944922 Ry
+LC: 10.346874999999999 E: -15.73944922
+Total energy line:      total energy              =     -15.73947256 Ry
+LC: 10.372656249999999 E: -15.73947256
+Total energy line:      total energy              =     -15.73946735 Ry
+LC: 10.35546875 E: -15.73946735
+Total energy line:      total energy              =     -15.73947372 Ry
+LC: 10.368359374999999 E: -15.73947372
+Total energy line:      total energy              =     -15.73947094 Ry
+LC: 10.359765625 E: -15.73947094
+Total energy line:      total energy              =     -15.73947487 Ry
+LC: 10.3662109375 E: -15.73947487
+Total energy line:      total energy              =     -15.73947372 Ry
+LC: 10.368359375 E: -15.73947372
+Total energy line:      total energy              =     -15.73947380 Ry
+LC: 10.36513671875 E: -15.7394738
+Total energy line:      total energy              =     -15.73947380 Ry
+LC: 10.36513671875 E: -15.7394738
+Total energy line:      total energy              =     -15.73947378 Ry
+LC: 10.36728515625 E: -15.73947378
+Total energy line:      total energy              =     -15.73947502 Ry
+LC: 10.365673828125 E: -15.73947502
+Total energy line:      total energy              =     -15.73947380 Ry
+LC: 10.365136718750001 E: -15.7394738
+Total energy line:      total energy              =     -15.73947332 Ry
+LC: 10.3659423828125 E: -15.73947332
+Total energy line:      total energy              =     -15.73947332 Ry
+LC: 10.3659423828125 E: -15.73947332
+Total energy line:      total energy              =     -15.73947500 Ry
+LC: 10.365405273437501 E: -15.739475
+Total energy line:      total energy              =     -15.73947501 Ry
+LC: 10.36553955078125 E: -15.73947501
+Total energy line:      total energy              =     -15.73947503 Ry
+LC: 10.365808105468751 E: -15.73947503
+Total energy line:      total energy              =     -15.73947332 Ry
+LC: 10.365942382812502 E: -15.73947332
+Total energy line:      total energy              =     -15.73947332 Ry
+LC: 10.365942382812502 E: -15.73947332
+Total energy line:      total energy              =     -15.73947503 Ry
+LC: 10.365740966796876 E: -15.73947503

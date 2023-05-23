@@ -1,10 +1,57 @@
 from energy import *
 from settings import *
 import numpy as np
+import matplotlib.pyplot as plt
 import os
 
 
+def create_figures():
+    print("Creating figure for silicon band structure")
+    silicon_band_structure(True)
+
+    print("Creating figure for valence band maximum")
+    VBM_figure()
+
+    print("Creating figure for conduction band minimum")
+    CBM_figure()
+
+    print("Creating figure for dispresion along X-W direction")
+    dispersion_XW()
+
+    print("Creating figure for nodal lines along high-symmetry lines")
+    trivial_nodal_lines()
+
+    print("Creating figure for nodal lines across the entire Brillouin zone")
+    nodal_lines()
+
+    print("Creating figure for optimized lattice constant")
+    lattice_constant_optimize()
+
+    print("Creating figure for high-res nodal lines around symmetry points")
+    highres_symmetry_points()
+
+    print("Creating figure for kinetic energy cutoff and total energy")
+    energy_convergence()
+
+
 def generate_points_between(pos1, pos2, num_points):
+    """
+    Generate a series of points along the line connecting,
+    vector pos1 and vector pos2 with num_points number of points.
+
+    Parameters
+    ----------
+    pos1 : list
+        Vector of pos1
+    pos2 : list
+        Vector of pos2
+    num_points : int
+        Number of points alon the connecting line
+
+    Returns
+    -------
+    list : List of points along the connecting line
+    """
     x1 = pos1[0]
     x2 = pos2[0]
 
@@ -22,6 +69,18 @@ def generate_points_between(pos1, pos2, num_points):
 
 
 def delete_duplicate_neighbors(matrix):
+    """
+    Delete duplicate points in the matrix
+
+    Parameters
+    ----------
+    matrix : 2D-list
+        Matrix containing the points to be filtered
+
+    Returns
+    -------
+    Returns matrix without any duplicate neighboring points
+    """
     indeces = []
     for i in range(len(matrix) - 1):
         c = (matrix[i] - matrix[i+1])
@@ -101,17 +160,6 @@ def CBM_figure():
     plt.savefig("figures/conduction_3d_plot.pdf")
 
 
-def create_figures():
-    print("Creating figure for silicon band structure")
-    silicon_band_structure(True)
-
-    print("Creating figure for valence band maximum")
-    VBM_figure()
-
-    print("Creating figure for conduction band minimum")
-    CBM_figure()
-
-
 def dispersion_XW():
     """
     Look at the dispersion in the X-W symmetry line
@@ -143,7 +191,8 @@ def nodal_lines():
 
 
 def trivial_nodal_lines():
-    plot_3d_intersects("grid100points", emin=-12, emax=VALENCE_MAX+0.1, colors=False, epsilon=0.0001)
+    plot_3d_intersects("grid100points", emin=-15,
+                       emax=VALENCE_MAX + 0.1, colors=False, epsilon=0.01)
     plt.savefig("figures/trivial_nodal_lines.pdf")
     plt.cla()
     plt.clf()
@@ -155,7 +204,7 @@ def lattice_constant_optimize():
 
     def wrapper(x):
         resp = wrap_func(x)
-        L.append([x, resp])
+        L.append([x[0], resp])
 
         return resp
 
@@ -163,31 +212,77 @@ def lattice_constant_optimize():
     npL = np.array(L)
 
     plt.scatter(npL[:, 0], npL[:, 1])
-    plt.ylabel("Total Energy [eV]")
+    plt.ylabel("Total Energy [Ry]")
     plt.xlabel("Lattice Constant")
     plt.savefig("figures/lattice_constant.pdf")
 
 
 def highres_symmetry_points():
     files = ["aroundGAMMA", "aroundL", "aroundW", "aroundX", "aroundU"]
-    emin = 2
-    for file in files:
-        plot_3d_intersects(file, emin=4, emax=VALENCE_MAX)
-        plt.title(f"{file} at energy interval [{emin}, {VALENCE_MAX}]")
-        plt.show()
-        # plt.savefig(f"figures/{file}.pdf")
-        # plt.clf()
-        # plt.cla()
+    filetitle = [r"Around $\Gamma$", "Around L",
+                 "Around W", "Around X", "Around U"]
+    points = [symmetry_points.gamma, symmetry_points.L,
+              symmetry_points.W, symmetry_points.X,
+              symmetry_points.U]
+
+    offset = 0.1
+
+    def Loffset(x):
+        return [x-offset, x+offset]
+
+    emin = -15
+    for file, filetitle, point in zip(files, filetitle, points):
+        (fig, ax) = plot_3d_intersects(file, emin=emin, emax=VALENCE_MAX)
+        ax.set_title(f"{filetitle} at energy interval [{emin}, {VALENCE_MAX}]")
+        # plt.show()
+
+        xlim = Loffset(point[0])
+        ylim = Loffset(point[1])
+        zlim = Loffset(point[2])
+        
+        ax.axes.set_xlim3d(xlim[0], xlim[1])
+        ax.axes.set_ylim3d(ylim[0], ylim[1])
+        ax.axes.set_zlim3d(zlim[0], zlim[1])
+
+        fig.savefig(f"figures/{file}.pdf")
+        plt.clf()
+        plt.cla()
     print("Done!")
+
+
+def energy_convergence():
+    ECONVERGE_FILENAME = "si.scf.Econverge"
+    
+    Es = [5, 6, 7, 8, 9, 10, 12, 14,  15, 20, 25, 30, 35, 40, 45, 50]
+    points = []
+    for ecutwfc in Es:
+        start = time.time()
+        file_change_line(ECONVERGE_FILENAME, 12, "    ecutwfc" + f" = {ecutwfc},\n")
+        Etot = get_total_energy(ECONVERGE_FILENAME)
+        points.append([ecutwfc, Etot])
+        Ttaken = time.time() - start
+        print(f"ecutwfc {ecutwfc} total energy {Etot} time taken {Ttaken}")
+
+    print(points)
+    with open("../output/Econverge.txt", "w") as f:
+        f.write(str(points))
+
+    np_points = np.array(points)
+    plt.plot(np_points[:, 0], np_points[:, 1])
+    plt.xlabel("Kinetic energy cutoff [Ry]")
+    plt.ylabel("Total energy [Ry]")
+    plt.savefig("figures/ecutwfc.pdf")
 
 
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    highres_symmetry_points()
+    # energy_convergence()
+    # highres_symmetry_points()
     # lattice_constant_optimize()
     # trivial_nodal_lines()
     # silicon_band_structure(init_scf_calc=False)
+    trivial_nodal_lines()
     # create_figures()
     # dispersion_XW()
     # nodal_lines()

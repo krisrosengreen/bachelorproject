@@ -141,3 +141,35 @@ def get_values(text) -> list:
     text_values = re.findall(reg_str, text)
     values = list(map(float, text_values))
     return values
+
+
+def file_change_line(filename, numline, newline):
+    """
+    Change a line in a given file
+
+    Parameters
+    ----------
+    filename : str
+        Name of file for which a line will be changed
+    numline : int
+        Line number
+    newline : str
+        Content of the new line
+    """
+    with open(filename, "r") as f:
+        lines = f.readlines()
+        lines[numline] = newline
+
+    with open(filename, "w") as f:
+        f.writelines(lines)
+
+
+def list_to_formatted_string(L):
+    newL = list(map(lambda x: " ".join(x), L))
+    print(newL)
+    finishL = "\n".join(newL)
+    print(finishL)
+
+
+if __name__ == "__main__":
+    print(list_to_formatted_string([[1,2,3],[4,5,6]]))

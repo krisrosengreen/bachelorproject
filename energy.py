@@ -1,7 +1,7 @@
 from settings import (FILENAME, PP_FILENAME, FILEOUTPUT,
                       BANDS_GNUFILE, AUTOGRID_FILENAME, OPTLATTICE_FILENAME,
                       TEMPLATE, VALENCE_MAX, PP_FILEOUTPUT)
-from utils import (get_values, fcc_points, PlottingRange)
+from utils import (get_values, fcc_points, PlottingRange, file_change_line)
 from scipy.optimize import fmin
 from utils import inputfile_row_format
 from datetime import timedelta  # Calculation ETAs
@@ -333,27 +333,6 @@ def get_total_energy(filename):
         if "total energy" in line:
             values = get_values(line)
             return values[0]
-
-
-def file_change_line(filename, numline, newline):
-    """
-    Change a line in a given file
-
-    Parameters
-    ----------
-    filename : str
-        Name of file for which a line will be changed
-    numline : int
-        Line number
-    newline : str
-        Content of the new line
-    """
-    with open(filename, "r") as f:
-        lines = f.readlines()
-        lines[numline] = newline
-
-    with open(filename, "w") as f:
-        f.writelines(lines)
 
 
 def get_lattice_energy(lattice_const):
@@ -707,7 +686,12 @@ def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
 
     epsilon : float
         The threshold energy difference between bands
+
+    Returns
+    -------
+    Axis : The axis used to plot the grid
     """
+    fig = plt.figure()
     ax = plt.axes(projection='3d')
 
     xdata = []
@@ -754,10 +738,12 @@ def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
     if colors:
         ax.scatter3D(xdata, ydata, zdata, s=1, c=L_colors)
     else:
-        ax.scatter3D(xdata, ydata, zdata, s=1)
+        ax.scatter3D(xdata, ydata, zdata, s=0.1)
     ax.set_xlabel(r"kx [$\frac{2\pi}{a}$]")
     ax.set_ylabel(r"ky [$\frac{2\pi}{a}$]")
     ax.set_zlabel(r"kz [$\frac{2\pi}{a}$]")
+
+    return (fig, ax)
 
 
 def plot_3d_energy(gridname, energy, epsilon=0.01):
