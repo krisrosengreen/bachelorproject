@@ -1,5 +1,6 @@
 from energy import *
 from settings import *
+from utils import limit_first_quad
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -191,8 +192,10 @@ def nodal_lines():
 
 
 def trivial_nodal_lines():
-    plot_3d_intersects("grid100points", emin=-15,
+    (fig, ax) = plot_3d_intersects("grid100points", emin=-15,
                        emax=VALENCE_MAX + 0.1, colors=False, epsilon=0.01)
+    plot_fcc(ax)
+    limit_first_quad(ax)
     plt.savefig("figures/trivial_nodal_lines.pdf")
     plt.cla()
     plt.clf()
@@ -232,7 +235,8 @@ def highres_symmetry_points():
 
     emin = -15
     for file, filetitle, point in zip(files, filetitle, points):
-        (fig, ax) = plot_3d_intersects(file, emin=emin, emax=VALENCE_MAX)
+        (fig, ax) = plot_3d_intersects(file, emin=emin, emax=VALENCE_MAX,
+                                       include_conduction=False, epsilon=0.001)
         ax.set_title(f"{filetitle} at energy interval [{emin}, {VALENCE_MAX}]")
         # plt.show()
 

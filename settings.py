@@ -1,5 +1,6 @@
 TEMPLATE = "si.bands.template"
 FILENAME = "si.bandspy.in"
+FILENAME30 = "si.bandspy30.in"
 FILEOUTPUT = "si.bandspy.out"
 
 AUTOGRID_FILENAME = "si.scf.autogrid"

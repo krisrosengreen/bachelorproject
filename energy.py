@@ -1,7 +1,9 @@
 from settings import (FILENAME, PP_FILENAME, FILEOUTPUT,
                       BANDS_GNUFILE, AUTOGRID_FILENAME, OPTLATTICE_FILENAME,
-                      TEMPLATE, VALENCE_MAX, PP_FILEOUTPUT)
-from utils import (get_values, fcc_points, PlottingRange, file_change_line)
+                      TEMPLATE, VALENCE_MAX, PP_FILEOUTPUT,
+                      FILENAME30)
+from utils import (get_values, fcc_points, PlottingRange, file_change_line,
+                   plot_fcc, check_within_BZ)
 from scipy.optimize import fmin
 from utils import inputfile_row_format
 from datetime import timedelta  # Calculation ETAs
@@ -157,6 +159,36 @@ def calculate_energies() -> bool:  # Returns True if successful
     return check1 and check2  # and check3  # Check if all were successful
 
 
+def calculate_energies30() -> bool:  # Returns True if successful
+    """
+    Run Quantum Espresso console commands to calculate
+    energies from Quantum Espresso input file 'si.bandspy.in'
+    """
+
+    # First make sure that TMP folder exists
+    assert os.path.isdir("tmp"), "Remember to do initial scf calculation!"
+
+    process1 = subprocess.Popen(["pw.x", "-i", FILENAME30],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process1.wait()
+    process2 = subprocess.Popen(["bands.x", "-i", PP_FILENAME],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    outp1, _ = process1.communicate()
+    outp2, _ = process2.communicate()
+
+    with open(FILEOUTPUT, "wb") as f:
+        f.write(outp1)
+    with open(PP_FILEOUTPUT, "wb") as f:
+        f.write(outp2)
+
+    check1 = check_success(outp1.decode())
+    check2 = check_success(outp2.decode())
+    # check3 = check_eigenvalues("si_bands_pp.out")
+
+    # return check1 and check2 and check3  # Check if all were successful
+    return check1 and check2  # and check3  # Check if all were successful
+
+
 def create_file(points):
     """
     Create a Quantum Espresso input file from given points
@@ -243,6 +275,49 @@ def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1],
             yield (kx, ky)
 
 
+def generate_grid_BZ(kx_range=[-1, 1], ky_range=[-1, 1],
+                     kz_range=[-1, 1], kx_num_points=41,
+                     ky_num_points=41, kz_num_points=41) -> tuple:
+    """
+    Creates a 3D grid. For each point create Quantum Espresso file.
+    Similar to generate_grid function, but only generates points
+    within the Brillouin zone.
+
+    Parameters
+    ----------
+    kx_range : list
+        List of size 2. The kx-range
+
+    ky_range : list
+        Similar to kx_range but in y direction.
+
+    kz_range : list
+        Similar to kx_range but in z direction
+
+    kx_num_points : int
+        Number of points in x-direction
+
+    ky_num_points : int
+        Number of points in y-direction
+
+    kz_num_points : int
+        Number of points in z-direction
+    """
+
+    for kx in np.linspace(*kx_range, kx_num_points):
+        for ky in np.linspace(*ky_range, ky_num_points):
+            if not check_within_BZ([kx, ky, 0]):
+                continue
+
+            grid = []
+            for kz in np.linspace(*kz_range, kz_num_points):
+                if check_within_BZ([kx, ky, kz]):
+                    grid.append([kx, ky, kz])
+
+            create_file(grid)
+            yield (kx, ky)
+
+
 def create_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
                 kz_range=[0.45, 0.55], kx_num_points=6,
                 ky_num_points=6, kz_num_points=6):
@@ -266,6 +341,55 @@ def create_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
         time_start = time.time()
 
         calculate_energies()
+        create_band_image(BANDS_GNUFILE,
+                          f"images/{gridname}_image_{i}_{j}.png")
+        copy_dat_file(gridname, kx=i, ky=j)
+
+        time_taken = time.time() - time_start
+        remaining_calcs = kx_num_points*ky_num_points - count
+        secs_remain = math.floor(time_taken * remaining_calcs)
+
+        print(f"\rCurrent [{i:.4f}, {j:.4f}] - \
+              {count}/{kx_num_points*ky_num_points}\
+              - Time left {str(timedelta(seconds=secs_remain))}\t", end='')
+
+        count += 1
+    print("\nDone!")
+
+
+def create_quad_BZ_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
+                        kz_range=[0.45, 0.55], kx_num_points=6,
+                        ky_num_points=6, kz_num_points=6):
+    """
+    Creates a grid defined by the function 'generate_grid'.
+    Copy '.dat' and '.gnu' files to respective folders.
+    Lastly, create images of the band structure.
+
+    This is different from create_grid function in that this
+    limits the points to within the first Brillouin zone.
+    And, this function only uses ecutwfc of 30 Ry instead
+    of the 50 Ry used in the other function. 30 Ry should
+    be sufficient as the total energy converges before 30
+    and is roughly as flat as it is in 50 Ry.
+
+    This should be ~10 times faster than create_grid
+    function.
+    """
+
+    with open(f"config/{gridname}_config.json", "w") as f:
+        print(f"Writing config file to {gridname}_config.json")
+        data = {"kz_offset": kz_range[0]}
+        f.write(json.dumps(data))
+
+    g = generate_grid_BZ(kx_range, ky_range, kz_range,
+                         kx_num_points, ky_num_points, kz_num_points)
+
+    count = 0
+    while ret := next(g, None):
+        (i, j) = ret
+        time_start = time.time()
+
+        calculate_energies30()
         create_band_image(BANDS_GNUFILE,
                           f"images/{gridname}_image_{i}_{j}.png")
         copy_dat_file(gridname, kx=i, ky=j)
@@ -448,7 +572,8 @@ def read_dat_file(filename) -> list:
 
 
 def find_intersections(filename, epsilon=0.1,
-                       emin=1, emax=VALENCE_MAX) -> list:
+                       emin=1, emax=VALENCE_MAX,
+                       include_conduction=True) -> list:
     """
     Find intersections in 'filename' within energy-min and energy-max
     that are within an energy threshold.
@@ -472,9 +597,14 @@ def find_intersections(filename, epsilon=0.1,
     points_intersect = []
 
     for c1, band1 in enumerate(bands):
+        if not include_conduction and c1 > 3:
+            continue
 
         for c2, band2 in enumerate(bands):
             if c1 == c2:
+                continue
+
+            if not include_conduction and c2 > 3:
                 continue
 
             idxs = np.where(np.abs(band1[:, 1] - band2[:, 1]) < epsilon)[0]
@@ -670,8 +800,9 @@ def get_grid_kz_offset(gridname):
     return data["kz_offset"]
 
 
-def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
-                       colors=False, plotrange=PlottingRange.standard()):
+def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.0001,
+                       colors=False, plotrange=PlottingRange.standard(),
+                       include_conduction=True):
     """
     Plot points where bands cross or overlap, within
     energies emin (Energy-minimum) and emax (Energy-max)
@@ -711,7 +842,8 @@ def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
 
         intersections = find_intersections("gnufiles/" + gnu_file + ".gnu",
                                            emin=emin, emax=emax,
-                                           epsilon=epsilon)
+                                           epsilon=epsilon,
+                                           include_conduction=include_conduction)
 
         for intersection in intersections:
             # Offset by because of way QE represents this
@@ -734,11 +866,12 @@ def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.01,
 
     # plot_brillouin_zone(ax)
     plot_symmetry_points(ax)
+    psize = 0.5
 
     if colors:
-        ax.scatter3D(xdata, ydata, zdata, s=1, c=L_colors)
+        ax.scatter3D(xdata, ydata, zdata, s=psize, c=L_colors)
     else:
-        ax.scatter3D(xdata, ydata, zdata, s=0.1)
+        ax.scatter3D(xdata, ydata, zdata, s=psize)
     ax.set_xlabel(r"kx [$\frac{2\pi}{a}$]")
     ax.set_ylabel(r"ky [$\frac{2\pi}{a}$]")
     ax.set_zlabel(r"kz [$\frac{2\pi}{a}$]")

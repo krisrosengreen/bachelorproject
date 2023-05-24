@@ -67,10 +67,9 @@ if __name__ == "__main__":
     plotrange = PlottingRange.standard()
     # init_scf_calculation()
     # check_convergence()
-    plot_3d_intersects("grid100points", emin=-12, emax=valence_max+0.1, plotrange=plotrange, colors=False, epsilon=0.0001)
+    plot_3d_intersects("aroundL", emin=-12, emax=VALENCE_MAX+0.1, plotrange=plotrange, colors=False, epsilon=0.0001)
     # plot_3d_energy("aroundL", 5, epsilon=1)
     # create_grid("aroundL", kx_num_points=12, ky_num_points=12, kz_num_points=12)
     # read_dat_file()
 
-
-    # plt.show()
+    plt.show()

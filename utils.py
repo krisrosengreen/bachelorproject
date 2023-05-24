@@ -1,6 +1,7 @@
 import re
 import numpy as np
 from scipy.spatial import Voronoi
+import matplotlib.pyplot as plt
 
 
 FORMATTING_DECIMALS = 4
@@ -72,7 +73,41 @@ class PlottingRange():
         cond1 = self._within(point[0], self.xlim)
         cond2 = self._within(point[1], self.ylim)
         cond3 = self._within(point[2], self.zlim)
-        return cond1 and cond2 and cond3
+        cond4 = check_within_BZ(point)
+        return cond1 and cond2 and cond3 and cond4
+
+
+def check_within_BZ(point_check) -> bool:
+    """
+    Check if a given points lies within the first Brillouin zone
+
+    Parameters
+    ----------
+    point_check : list
+        List containing the coordinates for the point to be checked
+
+    Returns
+    -------
+    bool : Whether point lies 
+    """
+    points = np.array([[2, 0, 0], [-2, 0, 0],
+                       [0, 2, 0], [0, -2, 0],
+                       [0, 0, 2], [0, 0, -2],
+                       [1, 1, 1], [-1, 1, -1],
+                       [1, 1, -1], [-1, 1, 1],
+                       [1, -1, 1], [-1, -1, -1],
+                       [1, -1, -1], [-1, -1, 1]])
+    point_check = np.array(point_check)
+    dist_center = np.sqrt(point_check.dot(point_check))
+
+    within = True
+
+    for point in points:
+        diff = point_check - point 
+        dist_point = np.sqrt(diff.dot(diff))
+        if dist_point < dist_center:
+            within = False
+    return within
 
 
 def inputfile_row_format(row, row_num) -> str:
@@ -171,5 +206,70 @@ def list_to_formatted_string(L):
     print(finishL)
 
 
+def connect_lines(points):
+    lines = []
+
+    for p1 in points:
+        for p2 in points:
+            dist = p1-p2
+            if np.sqrt(dist.dot(dist)) <= 0.9:
+                lines.append(np.array([p1, p2]))
+    return lines
+
+
+def rotate_points(points, angle):
+    rot_mat = np.array([[np.cos(angle), np.sin(angle), 0],
+                        [np.sin(angle), -np.cos(angle), 0],
+                        [0, 0, 1]])
+    return points@rot_mat
+
+
+def plot_lines(ax, lines):
+    for line in lines:
+        # Et lille hack til at tilføje dybde
+        camera = np.array([1, -1, 1])
+        p1 = (line[1] + line[0]) / 2
+        diff = camera - p1
+        dist = np.sqrt(diff.dot(diff))
+        print(f"dist {dist}")
+        alpha = 1 - min(1, (dist-1)/1.69)
+
+        ax.plot3D(line[:, 0], line[:, 1], line[:, 2], c='k', lw=0.5, alpha=alpha)
+
+
+def plot_first_quad_fcc(ax):
+    points = [[0.5, 1, 0], [0, 1, 0.5],  # X-W s
+              [1, 0.5, 0], [1, 0, 0.5],
+              [0.5, 0, 1], [0, 0.5, 1]]
+    points = np.array(points)
+    lines = connect_lines(points)
+    plot_lines(ax, lines)
+
+
+def limit_first_quad(ax):
+    ax.axes.set_xlim3d(0, 1)
+    ax.axes.set_ylim3d(0, 1)
+    ax.axes.set_zlim3d(0, 1)
+
+
+def plot_fcc(ax):
+    points = [[0.5, 1, 0], [0, 1, 0.5],  # X-W s
+              [1, 0.5, 0], [1, 0, 0.5],
+              [0.5, 0, 1], [0, 0.5, 1]]
+    points = np.array(points)
+    for angle in [0, np.pi/2, np.pi, 3*np.pi/2]:
+        rot_points = rotate_points(points, angle)
+        lines = connect_lines(rot_points)
+        plot_lines(ax, lines)
+
+    inverted = np.array([1, 1, -1]) * points
+    for angle in [0, np.pi/2, np.pi, 3*np.pi/2]:
+        rot_points = rotate_points(inverted, angle)
+        lines = connect_lines(rot_points)
+        plot_lines(ax, lines)
+
+    plt.axis("equal")
+
+
 if __name__ == "__main__":
-    print(list_to_formatted_string([[1,2,3],[4,5,6]]))
+    plot_fcc()
