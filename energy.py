@@ -277,7 +277,7 @@ def generate_grid(kx_range=[-1, 1], ky_range=[-1, 1],
 
 def generate_grid_BZ(kx_range=[-1, 1], ky_range=[-1, 1],
                      kz_range=[-1, 1], kx_num_points=41,
-                     ky_num_points=41, kz_num_points=41) -> tuple:
+                     ky_num_points=41, kz_num_points=41):
     """
     Creates a 3D grid. For each point create Quantum Espresso file.
     Similar to generate_grid function, but only generates points
@@ -306,7 +306,7 @@ def generate_grid_BZ(kx_range=[-1, 1], ky_range=[-1, 1],
 
     for kx in np.linspace(*kx_range, kx_num_points):
         for ky in np.linspace(*ky_range, ky_num_points):
-            if not check_within_BZ([kx, ky, 0]):
+            if not check_within_BZ([kx, ky, kz_range[0]]):
                 continue
 
             grid = []
@@ -318,8 +318,8 @@ def generate_grid_BZ(kx_range=[-1, 1], ky_range=[-1, 1],
             yield (kx, ky)
 
 
-def create_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
-                kz_range=[0.45, 0.55], kx_num_points=6,
+def create_grid(gridname, kx_range=[0, 1], ky_range=[0, 1],
+                kz_range=[0, 1], kx_num_points=6,
                 ky_num_points=6, kz_num_points=6):
     """
     Creates a grid defined by the function 'generate_grid'.
@@ -357,8 +357,8 @@ def create_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
     print("\nDone!")
 
 
-def create_quad_BZ_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
-                        kz_range=[0.45, 0.55], kx_num_points=6,
+def create_quad_BZ_grid(gridname, kx_range=[0, 1], ky_range=[0, 1],
+                        kz_range=[0, 1], kx_num_points=6,
                         ky_num_points=6, kz_num_points=6):
     """
     Creates a grid defined by the function 'generate_grid'.
@@ -372,8 +372,9 @@ def create_quad_BZ_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
     be sufficient as the total energy converges before 30
     and is roughly as flat as it is in 50 Ry.
 
-    This should be ~10 times faster than create_grid
-    function.
+    This should be faster than create_grid
+    function when calculating throughout the entire
+    Brillouin zone.
     """
 
     with open(f"config/{gridname}_config.json", "w") as f:
@@ -383,6 +384,13 @@ def create_quad_BZ_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
 
     g = generate_grid_BZ(kx_range, ky_range, kz_range,
                          kx_num_points, ky_num_points, kz_num_points)
+
+    # Number of points within this grid
+    total_count = 0
+    for kx in np.linspace(*kx_range, kx_num_points):
+        for ky in np.linspace(*ky_range, ky_num_points):
+            if check_within_BZ([kx, ky, kz_range[0]]):
+                total_count += 1
 
     count = 0
     while ret := next(g, None):
@@ -395,11 +403,11 @@ def create_quad_BZ_grid(gridname, kx_range=[0.45, 0.55], ky_range=[0.45, 0.55],
         copy_dat_file(gridname, kx=i, ky=j)
 
         time_taken = time.time() - time_start
-        remaining_calcs = kx_num_points*ky_num_points - count
+        remaining_calcs = total_count - count
         secs_remain = math.floor(time_taken * remaining_calcs)
 
         print(f"\rCurrent [{i:.4f}, {j:.4f}] - \
-              {count}/{kx_num_points*ky_num_points}\
+              {count}/{total_count}\
               - Time left {str(timedelta(seconds=secs_remain))}\t", end='')
 
         count += 1

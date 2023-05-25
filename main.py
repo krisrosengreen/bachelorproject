@@ -41,6 +41,16 @@ def create_grids_around_points():
     create_grid("aroundGAMMA", kx_range=Loffset(GAMMA[0]), ky_range=Loffset(GAMMA[1]), kz_range=Loffset(GAMMA[2]), **points)
 
 
+def create_L_grid_Ry30():
+    L = symmetry_points.L
+    num_points=4
+    offset = 0.1
+    Loffset = lambda x: [x-offset, x+offset]
+    points = {"kx_num_points": num_points, "ky_num_points": num_points, "kz_num_points": num_points}
+    create_quad_BZ_grid("ry30_Lgrid", kx_range=Loffset(L[0]), ky_range=Loffset(L[1]), kz_range=Loffset(L[2]), **points)
+
+
+
 if __name__ == "__main__":
     """
     Basic setup
@@ -62,12 +72,21 @@ if __name__ == "__main__":
     Look at nodal lines, energy etc
     """
 
+    Lrange = [0.45,0.55]
+
+    # create_L_grid_Ry30()
+    # create_grid("test_aroundL", kx_num_points=101, ky_num_points=101, kz_num_points=101)
+    # create_quad_BZ_grid("test_aroundL", kx_num_points=101, ky_num_points=101, kz_num_points=101)
+    print("Creating test2 grid")
+    create_grid("test3", kx_num_points=10, ky_num_points=10, kz_num_points=10, kx_range=Lrange, ky_range=Lrange, kz_range=Lrange)
 
     plotrange = PlottingRange([-0, 1], [-0, 1], [-0, 1])  # (xlim, ylim, zlim)
     plotrange = PlottingRange.standard()
     # init_scf_calculation()
     # check_convergence()
-    plot_3d_intersects("aroundL", emin=-12, emax=VALENCE_MAX+0.1, plotrange=plotrange, colors=False, epsilon=0.0001)
+    # plot_3d_intersects("aroundL", emin=-12, emax=VALENCE_MAX+0.1, plotrange=plotrange, colors=False, epsilon=0.0001)
+    print("Plotting now!")
+    plot_3d_intersects("test3", emin=-12, emax=VALENCE_MAX+0.1, plotrange=plotrange, colors=False, epsilon=0.01)
     # plot_3d_energy("aroundL", 5, epsilon=1)
     # create_grid("aroundL", kx_num_points=12, ky_num_points=12, kz_num_points=12)
     # read_dat_file()
