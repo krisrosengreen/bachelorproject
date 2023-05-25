@@ -212,6 +212,29 @@ def create_file(points):
         f.write(string_builder)
 
 
+def create_file_ry30(points):
+    """
+    Create a Quantum Espresso input file from given points
+
+    Parameters
+    ----------
+    points - list
+        Contains points to be used in Quantum Espresso to create band structure
+    """
+    string_builder = ""
+
+    with open(TEMPLATE, "r") as f:
+        string_builder = f.read() + "\n"
+
+    string_builder += f"   {len(points)}\n"
+
+    for c, row in enumerate(points):
+        string_builder += inputfile_row_format(row, c)
+
+    with open(FILENAME30, 'w') as f:
+        f.write(string_builder)
+
+
 def copy_dat_file(gridname, kx, ky):
     """
     Copy 'si_bands.dat' file to folder qefiles/datfiles/ and change name
@@ -314,7 +337,7 @@ def generate_grid_BZ(kx_range=[-1, 1], ky_range=[-1, 1],
                 if check_within_BZ([kx, ky, kz]):
                     grid.append([kx, ky, kz])
 
-            create_file(grid)
+            create_file_ry30(grid)
             yield (kx, ky)
 
 
