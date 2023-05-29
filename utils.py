@@ -1,6 +1,5 @@
 import re
 import numpy as np
-from scipy.spatial import Voronoi
 import matplotlib.pyplot as plt
 
 
@@ -126,44 +125,6 @@ def inputfile_row_format(row, row_num) -> str:
     return f"\t{row[0]:.{FD}f} {row[1]:.{FD}f} {row[2]:.{FD}f} {row_num: >3}\n"
 
 
-def fcc_points() -> list:
-    # Code taken from
-    # http://staff.ustc.edu.cn/~zqj/posts/howto-plot-brillouin-zone/
-    cell = np.array([[0.0, 1, 1],
-                    [1, 0.0, 1],
-                    [1, 1, 0.0]])
-
-    cell = np.asarray(cell, dtype=float)
-    assert cell.shape == (3, 3)
-
-    px, py, pz = np.tensordot(cell, np.mgrid[-1:2, -1:2, -1:2], axes=[0, 0])
-    points = np.c_[px.ravel(), py.ravel(), pz.ravel()]
-
-    vor = Voronoi(points)
-
-    bz_facets = []
-    bz_ridges = []
-    bz_vertices = []
-
-    # for rid in vor.ridge_vertices:
-    #     if( np.all(np.array(rid) >= 0) ):
-    #         bz_ridges.append(vor.vertices[np.r_[rid, [rid[0]]]])
-    #         bz_facets.append(vor.vertices[rid])
-
-    for pid, rid in zip(vor.ridge_points, vor.ridge_vertices):
-        # WHY 13 ????
-        # The Voronoi ridges/facets are perpendicular to the lines drawn
-        # between the input points. The 14th input point is [0, 0, 0].
-        if (pid[0] == 13 or pid[1] == 13):
-            bz_ridges.append(vor.vertices[np.r_[rid, [rid[0]]]])
-            bz_facets.append(vor.vertices[rid])
-            bz_vertices += rid
-
-    bz_vertices = list(set(bz_vertices))
-
-    return bz_ridges
-
-
 def get_values(text) -> list:
     """
     Given a text return a list of values contained within
@@ -231,7 +192,6 @@ def plot_lines(ax, lines):
         p1 = (line[1] + line[0]) / 2
         diff = camera - p1
         dist = np.sqrt(diff.dot(diff))
-        print(f"dist {dist}")
         alpha = 1 - min(1, (dist-1)/1.69)
 
         ax.plot3D(line[:, 0], line[:, 1], line[:, 2], c='k', lw=0.5, alpha=alpha)
@@ -269,7 +229,3 @@ def plot_fcc(ax):
         plot_lines(ax, lines)
 
     plt.axis("equal")
-
-
-if __name__ == "__main__":
-    plot_fcc()

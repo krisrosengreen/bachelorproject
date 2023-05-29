@@ -1,6 +1,7 @@
 from energy import *
 from settings import *
-from utils import limit_first_quad
+from utils import (limit_first_quad, plot_first_quad_fcc, rotate_points,
+                   connect_lines, plot_fcc, plot_lines, limit_first_quad)
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -278,6 +279,43 @@ def energy_convergence():
     plt.savefig("figures/ecutwfc.pdf")
 
 
+def visualize_BZ_grid_method():
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+
+    plot_fcc(ax)
+
+    def exclude_points(points):
+        ret = []
+        for point in points:
+            if check_within_BZ(point):
+                ret.append(point)
+        return ret
+    
+    n = 5
+    for kx in np.linspace(0,1,n):
+        for ky in np.linspace(0,1,n):
+            column = generate_points_between([kx,ky,0], [kx,ky,1], 20)
+            column = exclude_points(column)
+            column = np.array(column)
+            if len(column) != 0:
+                ax.plot3D(column[:,0],column[:,1],column[:,2], c="b")
+
+    # limit_first_quad(ax)
+
+    ax.grid(False)
+
+    plt.axis('off')
+    plt.grid(b=None)
+
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+
+    plt.savefig("figures/grid_method.svg")
+
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
@@ -286,7 +324,8 @@ if __name__ == "__main__":
     # lattice_constant_optimize()
     # trivial_nodal_lines()
     # silicon_band_structure(init_scf_calc=False)
-    trivial_nodal_lines()
+    # trivial_nodal_lines()
+    visualize_BZ_grid_method()
     # create_figures()
     # dispersion_XW()
     # nodal_lines()

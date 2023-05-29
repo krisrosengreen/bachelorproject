@@ -2,8 +2,7 @@ from settings import (FILENAME, PP_FILENAME, FILEOUTPUT,
                       BANDS_GNUFILE, AUTOGRID_FILENAME, OPTLATTICE_FILENAME,
                       TEMPLATE, VALENCE_MAX, PP_FILEOUTPUT,
                       FILENAME30)
-from utils import (get_values, fcc_points, PlottingRange, file_change_line,
-                   plot_fcc, check_within_BZ)
+from utils import (get_values, PlottingRange, file_change_line, check_within_BZ)
 from scipy.optimize import fmin
 from utils import inputfile_row_format
 from datetime import timedelta  # Calculation ETAs
@@ -910,7 +909,7 @@ def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.0001,
     return (fig, ax)
 
 
-def plot_3d_energy(gridname, energy, epsilon=0.01):
+def plot_3d_energy(gridname, energy):
     """
     Plot all points on bands calculated near 'energy' and within 'epsilon'
 
