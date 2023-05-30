@@ -1,3 +1,5 @@
+transfer_figs.sh
+
 __pycache__/*
 qefiles/datfiles/*
 qefiles/images/*

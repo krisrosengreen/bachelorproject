@@ -8,32 +8,14 @@ import os
 
 
 def create_figures():
-    print("Creating figure for silicon band structure")
-    silicon_band_structure(True)
-
-    print("Creating figure for valence band maximum")
-    VBM_figure()
-
-    print("Creating figure for conduction band minimum")
-    CBM_figure()
-
-    print("Creating figure for dispresion along X-W direction")
-    dispersion_XW()
-
-    print("Creating figure for nodal lines along high-symmetry lines")
-    trivial_nodal_lines()
-
-    print("Creating figure for nodal lines across the entire Brillouin zone")
-    nodal_lines()
-
-    print("Creating figure for optimized lattice constant")
-    lattice_constant_optimize()
-
-    print("Creating figure for high-res nodal lines around symmetry points")
-    highres_symmetry_points()
-
-    print("Creating figure for kinetic energy cutoff and total energy")
-    energy_convergence()
+    figfuncs = [silicon_band_structure, VBM_figure, CBM_figure, dispersion_XW,
+                trivial_nodal_lines, nodal_lines, lattice_constant_optimize,
+                highres_symmetry_points, energy_convergence, visualize_BZ_grid_method,
+                brillouin_zone_and_symmetry_points]
+    print("Creating figures!")
+    for c, func in enumerate(figfuncs):
+        print(f"\rCreating figure {c+1}/{len(figfuncs)}", end="")
+    print("\nDone!")
 
 
 def generate_points_between(pos1, pos2, num_points):
@@ -96,7 +78,7 @@ def delete_duplicate_neighbors(matrix):
     return np.array(new_array)
 
 
-def silicon_band_structure(init_scf_calc=True):
+def silicon_band_structure(init_scf_calc=False):
     """
     Look at key silicon band structure.
     Path: L - Gamma - X - W - U - Gamma
@@ -143,6 +125,8 @@ def silicon_band_structure(init_scf_calc=True):
 
     for band in bands:
         plt.plot(band[:, 0], band[:, 1] - valence_max, linewidth=1, alpha=0.5, color='k')
+
+    plt.axhline(y=0, color="r", lw=0.2,linestyle='--')
 
     plt.ylabel("E [eV]")
     plt.savefig("figures/si_band.pdf")
@@ -312,8 +296,37 @@ def visualize_BZ_grid_method():
     ax.set_yticks([])
     ax.set_zticks([])
 
-    plt.savefig("figures/grid_method.svg")
+    plt.tight_layout()
 
+    plt.savefig("figures/grid_method.pdf")
+    plt.cla()
+    plt.clf()
+
+
+def brillouin_zone_and_symmetry_points():
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    plot_symmetry_points(ax)
+
+    ax.plot3D([0, 0], [0,0], [0,1], ls="--", c="b", alpha=0.2)
+    ax.plot3D([0, 0], [0,1], [0,0], ls="--", c="b", alpha=0.2)
+    ax.plot3D([0, 1], [0,0], [0,0], ls="--", c="b", alpha=0.2)
+
+    plot_fcc(ax)
+    ax.grid(False)
+    ax.view_init(25, -45)
+
+
+    plt.axis('off')
+    plt.grid(b=None)
+    # ax.set_xticks([])
+    # ax.set_yticks([])
+    # ax.set_zticks([])
+
+    plt.tight_layout()
+    plt.savefig("figures/BZ_and_points.pdf")
+    plt.cla()
+    plt.clf()
 
 
 if __name__ == "__main__":
@@ -324,6 +337,7 @@ if __name__ == "__main__":
     # lattice_constant_optimize()
     # trivial_nodal_lines()
     # silicon_band_structure(init_scf_calc=False)
+    # brillouin_zone_and_symmetry_points()
     # trivial_nodal_lines()
     visualize_BZ_grid_method()
     # create_figures()

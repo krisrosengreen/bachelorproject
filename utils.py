@@ -194,7 +194,12 @@ def plot_lines(ax, lines):
         dist = np.sqrt(diff.dot(diff))
         alpha = 1 - min(1, (dist-1)/1.69)
 
-        ax.plot3D(line[:, 0], line[:, 1], line[:, 2], c='k', lw=0.5, alpha=alpha)
+        threshold = 0.2
+
+        if alpha > threshold:
+            ax.plot3D(line[:, 0], line[:, 1], line[:, 2], c='k', lw=0.5, alpha=alpha)
+        else:
+            ax.plot3D(line[:, 0], line[:, 1], line[:, 2], c='k', ls="dashed", dashes=(10,20), lw=0.5, alpha=threshold)
 
 
 def plot_first_quad_fcc(ax):
