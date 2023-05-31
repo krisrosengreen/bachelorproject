@@ -1,6 +1,7 @@
 from energy import *
 from matplotlib import rcParamsDefault
 import matplotlib.pyplot as plt
+from utils import limit_first_quad, plot_fcc
 import os
 
 
@@ -78,8 +79,8 @@ if __name__ == "__main__":
     # create_grid("test_aroundL", kx_num_points=101, ky_num_points=101, kz_num_points=101)
     # create_quad_BZ_grid("test_aroundL", kx_num_points=101, ky_num_points=101, kz_num_points=101)
     # print("Creating test2 grid")
-    create_quad_BZ_grid("grid150", kx_num_points=150, ky_num_points=150,
-                        kz_num_points=150, kx_range=Lrange, ky_range=Lrange, kz_range=Lrange)
+    # create_quad_BZ_grid("grid150", kx_num_points=150, ky_num_points=150,
+                        # kz_num_points=150, kx_range=Lrange, ky_range=Lrange, kz_range=Lrange)
 
     plotrange = PlottingRange([-0, 1], [-0, 1], [-0, 1])  # (xlim, ylim, zlim)
     plotrange = PlottingRange.standard()
@@ -87,9 +88,15 @@ if __name__ == "__main__":
     # check_convergence()
     # plot_3d_intersects("test5", emin=-12, emax=VALENCE_MAX+0.1, plotrange=plotrange, colors=False, epsilon=0.0001)
     # print("Plotting now!")
-    # plot_3d_intersects("aroundL", emin=-12, emax=VALENCE_MAX+0.1, plotrange=plotrange, colors=False, epsilon=0.0001)
+    (fig,ax) = plot_3d_intersects("grid150", emin=-12, emax=VALENCE_MAX+0.1, plotrange=plotrange, colors=False, epsilon=0.001, include_conduction=False)
     # plot_3d_energy("aroundL", 5, epsilon=1)
     # create_grid("aroundL", kx_num_points=12, ky_num_points=12, kz_num_points=12)
     # read_dat_file()
 
-    # plt.show()
+    plot_fcc(ax)
+
+    from utils import remove_ticks_and_grid
+    remove_ticks_and_grid(ax)
+    limit_first_quad(ax)
+
+    plt.show()

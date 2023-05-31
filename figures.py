@@ -329,6 +329,19 @@ def brillouin_zone_and_symmetry_points():
     plt.clf()
 
 
+def frontpage_graphic():
+    fig = plt.figure()
+    ax = plt.axes(projection="3d")
+    plot_fcc(ax)
+    from utils import remove_ticks_and_grid
+    remove_ticks_and_grid(ax)
+
+    plt.tight_layout()
+    plt.savefig("figures/frontpage.pdf")
+    plt.cla()
+    plt.clf()
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
@@ -339,7 +352,8 @@ if __name__ == "__main__":
     # silicon_band_structure(init_scf_calc=False)
     # brillouin_zone_and_symmetry_points()
     # trivial_nodal_lines()
-    visualize_BZ_grid_method()
+    # visualize_BZ_grid_method()
+    frontpage_graphic()
     # create_figures()
     # dispersion_XW()
     # nodal_lines()

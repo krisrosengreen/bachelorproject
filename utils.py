@@ -217,6 +217,12 @@ def limit_first_quad(ax):
     ax.axes.set_zlim3d(0, 1)
 
 
+def remove_ticks_and_grid(ax):
+    ax.grid(False)
+    plt.axis('off')
+    plt.grid(b=None)
+
+
 def plot_fcc(ax):
     points = [[0.5, 1, 0], [0, 1, 0.5],  # X-W s
               [1, 0.5, 0], [1, 0, 0.5],
