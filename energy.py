@@ -526,7 +526,7 @@ def optimize_lattice_constant(max_iterations=30) -> float:
     return best_val[0]
 
 
-def plot_bands_data(filename):
+def plot_bands_data(filename, zero_vbm=True):
     """
     From filename plot gnu data
 
@@ -550,8 +550,13 @@ def plot_bands_data(filename):
         xy_data = list(map(lambda s: floatify(s.strip().split()), lines))
 
         xy_data_np = np.array(xy_data)
-        plt.plot(xy_data_np[:, 0], xy_data_np[:, 1],
-                 linewidth=1, alpha=0.5, color='k')
+
+        if zero_vbm:
+            plt.plot(xy_data_np[:, 0], xy_data_np[:, 1] - VALENCE_MAX,
+                     linewidth=1, alpha=0.5, color='k')
+        else:
+            plt.plot(xy_data_np[:, 0], xy_data_np[:, 1],
+                     linewidth=1, alpha=0.5, color='k')
 
 
 def create_band_image(filename, output):

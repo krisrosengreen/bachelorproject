@@ -11,10 +11,11 @@ def create_figures():
     figfuncs = [silicon_band_structure, VBM_figure, CBM_figure, dispersion_XW,
                 trivial_nodal_lines, nodal_lines, lattice_constant_optimize,
                 highres_symmetry_points, energy_convergence, visualize_BZ_grid_method,
-                brillouin_zone_and_symmetry_points]
+                brillouin_zone_and_symmetry_points, find_interesting_line]
     print("Creating figures!")
     for c, func in enumerate(figfuncs):
         print(f"\rCreating figure {c+1}/{len(figfuncs)}", end="")
+        func()
     print("\nDone!")
 
 
@@ -342,9 +343,24 @@ def frontpage_graphic():
     plt.clf()
 
 
+def find_interesting_line():
+    start = symmetry_points.L
+    end = [0.4, 0, 0]
+    points = generate_points_between(start, end, 50)
+    create_file(points)
+    calculate_energies()
+    plot_bands_data(BANDS_GNUFILE)
+    plt.xticks([0, size_point(points, len(points))], ["L", "$(0.4,0,0)\\frac{2\\pi}{a}$"])
+    plt.axvline(0, ls="--", c="gray")
+    plt.axvline(size_point(points, len(points)), ls="--", c="gray")
+    plt.ylabel("E [eV]")
+    plt.savefig("figures/interesting_line.pdf")
+
+
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
+    find_interesting_line()
     # energy_convergence()
     # highres_symmetry_points()
     # lattice_constant_optimize()
@@ -353,7 +369,7 @@ if __name__ == "__main__":
     # brillouin_zone_and_symmetry_points()
     # trivial_nodal_lines()
     # visualize_BZ_grid_method()
-    frontpage_graphic()
+    # frontpage_graphic()
     # create_figures()
     # dispersion_XW()
     # nodal_lines()
