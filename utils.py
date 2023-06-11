@@ -161,6 +161,16 @@ def file_change_line(filename, numline, newline):
 
 
 def list_to_formatted_string(L):
+    """
+    Given a list of lists, return a string where each list is formatted
+    as a string and separated by a newline
+
+    Parameters
+    ----------
+    L : list
+        List of lists to be formatted
+    """
+
     newL = list(map(lambda x: " ".join(x), L))
     print(newL)
     finishL = "\n".join(newL)
@@ -168,6 +178,18 @@ def list_to_formatted_string(L):
 
 
 def connect_lines(points):
+    """
+    Given a list of points, return a list of lines connecting them
+
+    Parameters
+    ----------
+    points : list
+        List of points to be connected
+
+    Returns
+    -------
+    lines : list
+    """
     lines = []
 
     for p1 in points:
@@ -179,6 +201,20 @@ def connect_lines(points):
 
 
 def rotate_points(points, angle):
+    """
+    Rotate a list of points around the z-axis
+
+    Parameters
+    ----------
+    points : list
+        List of points to be rotated
+    angle : float
+        Angle to rotate points by
+
+    Returns
+    -------
+    points : list
+    """
     rot_mat = np.array([[np.cos(angle), np.sin(angle), 0],
                         [np.sin(angle), -np.cos(angle), 0],
                         [0, 0, 1]])
@@ -186,6 +222,16 @@ def rotate_points(points, angle):
 
 
 def plot_lines(ax, lines):
+    """
+    Plot a list of lines
+
+    Parameters
+    ----------
+    ax : matplotlib.axes
+        Axes to plot on
+    lines : list
+        List of lines to be plotted
+    """
     for line in lines:
         # Et lille hack til at tilføje dybde
         camera = np.array([1, -1, 1])
@@ -203,6 +249,14 @@ def plot_lines(ax, lines):
 
 
 def plot_first_quad_fcc(ax):
+    """
+    Plot the first quadrant of the fcc lattice
+
+    Parameters
+    ----------
+    ax : matplotlib.axes
+        Axes to plot on
+    """
     points = [[0.5, 1, 0], [0, 1, 0.5],  # X-W s
               [1, 0.5, 0], [1, 0, 0.5],
               [0.5, 0, 1], [0, 0.5, 1]]
@@ -212,18 +266,42 @@ def plot_first_quad_fcc(ax):
 
 
 def limit_first_quad(ax):
+    """
+    Set the limits of the axes to the first quadrant
+
+    Parameters
+    ----------
+    ax : matplotlib.axes
+        Axes to set limits of
+    """
     ax.axes.set_xlim3d(0, 1)
     ax.axes.set_ylim3d(0, 1)
     ax.axes.set_zlim3d(0, 1)
 
 
 def remove_ticks_and_grid(ax):
+    """
+    Remove ticks and grid from axes
+
+    Parameters
+    ----------
+    ax : matplotlib.axes
+        Axes to remove ticks and grid from
+    """
     ax.grid(False)
     plt.axis('off')
     plt.grid(b=None)
 
 
 def plot_fcc(ax):
+    """
+    Plot the fcc lattice
+
+    Parameters
+    ----------
+    ax : matplotlib.axes
+        Axes to plot on
+    """
     points = [[0.5, 1, 0], [0, 1, 0.5],  # X-W s
               [1, 0.5, 0], [1, 0, 0.5],
               [0.5, 0, 1], [0, 0.5, 1]]

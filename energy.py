@@ -809,11 +809,32 @@ def check_convergence(epsilon_convergence=0.05):
 
 
 def plot_brillouin_zone(ax):
+    """
+    Plot the brillouin zone
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes to plot on
+    """
     for xx in fcc_points():
         ax.plot(xx[:, 0], xx[:, 1], xx[:, 2], color='k', lw=1.0)
 
 
 def get_grid_files(gridname):
+    """
+    Get the files for the grid
+
+    Parameters
+    ----------
+    gridname : str
+        Name of grid
+
+    Returns
+    -------
+    list : List of files
+    """
+
     with open(f"config/{gridname}", "r") as f:
         lines = f.readlines()
 
@@ -829,6 +850,18 @@ def get_grid_files(gridname):
 
 
 def get_grid_kz_offset(gridname):
+    """
+    Get the kz offset for the grid
+
+    Parameters
+    ----------
+    gridname : str
+        Name of grid
+
+    Returns
+    -------
+    float : The kz offset
+    """
     with open(f"config/{gridname}_config.json", "r") as f:
         data = json.load(f)
 
@@ -1015,6 +1048,9 @@ def conduction_minimum(show=False):
 
 
 def band_gap():
+    """
+    Finds the band gap of the material
+    """
     valence_max = valence_maximum()
     conduct_min = conduction_minimum()
     band_gap = conduct_min - valence_max

@@ -37,6 +37,7 @@ Similarly to do calculations across a 3D section of a Brillouin zone do,
 
 ```python
 import os
+import matplotlib.pyplot as plt
 from settings import VALENCE_MAX 
 from energy import (create_file, calculate_energies,
                     init_scf_calculation, create_band_image)

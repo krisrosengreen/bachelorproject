@@ -8,6 +8,9 @@ import os
 
 
 def create_figures():
+    """
+    Create all figures
+    """
     figfuncs = [silicon_band_structure, VBM_figure, CBM_figure, dispersion_XW,
                 trivial_nodal_lines, nodal_lines, lattice_constant_optimize,
                 highres_symmetry_points, energy_convergence, visualize_BZ_grid_method,
@@ -136,12 +139,20 @@ def silicon_band_structure(init_scf_calc=False):
 
 
 def VBM_figure():
+    """
+    Look at the valence band maximum
+    """
+
     vbm_energy = valence_maximum()
     plot_3d_energy(vbm_energy)
     plt.savefig("figures/valence_maximum_3d_plot.pdf")
 
 
 def CBM_figure():
+    """
+    Look at the conduction band minimum
+    """
+
     cbm_energy = conduction_minimum()
     plot_3d_energy(cbm_energy)
     plt.savefig("figures/conduction_3d_plot.pdf")
@@ -171,6 +182,10 @@ def dispersion_XW():
 
 
 def nodal_lines():
+    """
+    Look at the nodal lines
+    """
+
     # Nodal line in Gamma-L direction
     plot_3d_intersects(emin=4, emax=6)
     plt.title(r"Energy range: [4, 5]. Nodal line in direction $\Gamma$-L")
@@ -178,16 +193,25 @@ def nodal_lines():
 
 
 def trivial_nodal_lines():
-    (fig, ax) = plot_3d_intersects("grid100points", emin=-15,
-                       emax=VALENCE_MAX + 0.1, colors=False, epsilon=0.01)
+    """
+    Look at the trivial nodal lines
+    """
+
+    (_, ax) = plot_3d_intersects("grid150", emin=-15,
+                       emax=VALENCE_MAX + 0.1, colors=False, epsilon=0.001)
     plot_fcc(ax)
     limit_first_quad(ax)
+    ax.plot3D([0.5, 0.4], [0.5, 0.0], [0.5, 0.0], c="r")
     plt.savefig("figures/trivial_nodal_lines.pdf")
     plt.cla()
     plt.clf()
 
 
 def lattice_constant_optimize():
+    """
+    Optimize the lattice constant
+    """
+
     L = []
     wrap_func = get_lattice_energy
 
@@ -207,6 +231,10 @@ def lattice_constant_optimize():
 
 
 def highres_symmetry_points():
+    """
+    Look at the symmetry points in high resolution
+    """
+
     files = ["aroundGAMMA", "aroundL", "aroundW", "aroundX", "aroundU"]
     filetitle = [r"Around $\Gamma$", "Around L",
                  "Around W", "Around X", "Around U"]
@@ -241,6 +269,9 @@ def highres_symmetry_points():
 
 
 def energy_convergence():
+    """
+    Look at the energy convergence
+    """
     ECONVERGE_FILENAME = "si.scf.Econverge"
     
     Es = [5, 6, 7, 8, 9, 10, 12, 14,  15, 20, 25, 30, 35, 40, 45, 50]
@@ -265,6 +296,9 @@ def energy_convergence():
 
 
 def visualize_BZ_grid_method():
+    """
+    Visualize the BZ grid method
+    """
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
@@ -305,6 +339,9 @@ def visualize_BZ_grid_method():
 
 
 def brillouin_zone_and_symmetry_points():
+    """
+    Visualize the BZ and symmetry points
+    """
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     plot_symmetry_points(ax)
@@ -331,6 +368,10 @@ def brillouin_zone_and_symmetry_points():
 
 
 def frontpage_graphic():
+    """
+    Create the frontpage graphic
+    """
+
     fig = plt.figure()
     ax = plt.axes(projection="3d")
     plot_fcc(ax)
@@ -344,6 +385,10 @@ def frontpage_graphic():
 
 
 def find_interesting_line():
+    """
+    Find the interesting line goes roughly in the direction L to (0.4, 0, 0)*2*pi/a
+    """
+
     start = symmetry_points.L
     end = [0.4, 0, 0]
     points = generate_points_between(start, end, 50)
@@ -360,11 +405,11 @@ def find_interesting_line():
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
-    find_interesting_line()
+    # find_interesting_line()
     # energy_convergence()
     # highres_symmetry_points()
     # lattice_constant_optimize()
-    # trivial_nodal_lines()
+    trivial_nodal_lines()
     # silicon_band_structure(init_scf_calc=False)
     # brillouin_zone_and_symmetry_points()
     # trivial_nodal_lines()
