@@ -384,6 +384,28 @@ def frontpage_graphic():
     plt.clf()
 
 
+def frontpage_graphic2():
+    from scipy import stats
+    from utils import remove_ticks_and_grid
+    resp = get_3d_intersects_points("aroundX", emin=-15, epsilon=0.001)
+
+    (xdata, ydata, zdata) = resp.get_points()
+
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+
+    xyz = np.vstack([xdata, ydata, zdata])
+    density = stats.gaussian_kde(xyz)(xyz)
+
+    ax.scatter3D(xdata, ydata, zdata, c=density, s=2)
+    remove_ticks_and_grid(ax)
+
+    plt.tight_layout()
+    plt.savefig("figures/frontpage2.pdf")
+    plt.cla()
+    plt.clf()
+
+
 def find_interesting_line():
     """
     Find the interesting line goes roughly in the direction L to (0.4, 0, 0)*2*pi/a
@@ -405,11 +427,12 @@ def find_interesting_line():
 if __name__ == "__main__":
     os.chdir("qefiles/")
 
+    frontpage_graphic2()
     # find_interesting_line()
     # energy_convergence()
     # highres_symmetry_points()
     # lattice_constant_optimize()
-    trivial_nodal_lines()
+    # trivial_nodal_lines()
     # silicon_band_structure(init_scf_calc=False)
     # brillouin_zone_and_symmetry_points()
     # trivial_nodal_lines()

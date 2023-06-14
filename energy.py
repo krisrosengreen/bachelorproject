@@ -2,7 +2,7 @@ from settings import (FILENAME, PP_FILENAME, FILEOUTPUT,
                       BANDS_GNUFILE, AUTOGRID_FILENAME, OPTLATTICE_FILENAME,
                       TEMPLATE, VALENCE_MAX, PP_FILEOUTPUT,
                       FILENAME30)
-from utils import (get_values, PlottingRange, file_change_line, check_within_BZ)
+from utils import (get_values, PlottingRange, file_change_line, check_within_BZ, IntersectsResponse)
 from scipy.optimize import fmin
 from utils import inputfile_row_format
 from datetime import timedelta  # Calculation ETAs
@@ -868,31 +868,8 @@ def get_grid_kz_offset(gridname):
     return data["kz_offset"]
 
 
-def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.0001,
-                       colors=False, plotrange=PlottingRange.standard(),
-                       include_conduction=True):
-    """
-    Plot points where bands cross or overlap, within
-    energies emin (Energy-minimum) and emax (Energy-max)
-
-    Parameters
-    ----------
-    emin : float
-        The minimum energy
-
-    emax : float
-        The maximum energy
-
-    epsilon : float
-        The threshold energy difference between bands
-
-    Returns
-    -------
-    Axis : The axis used to plot the grid
-    """
-    fig = plt.figure()
-    ax = plt.axes(projection='3d')
-
+def get_3d_intersects_points(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.0001,
+                             plotrange=PlottingRange.standard(), include_conduction=True):
     xdata = []
     ydata = []
     zdata = []
@@ -931,6 +908,39 @@ def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.0001,
                 B = 0
 
                 L_colors.append((R, G, B))
+
+    return IntersectsResponse(xdata, ydata, zdata, L_colors)
+
+
+
+def plot_3d_intersects(gridname, emin=4, emax=VALENCE_MAX, epsilon=0.0001,
+                       colors=False, plotrange=PlottingRange.standard(),
+                       include_conduction=True):
+    """
+    Plot points where bands cross or overlap, within
+    energies emin (Energy-minimum) and emax (Energy-max)
+
+    Parameters
+    ----------
+    emin : float
+        The minimum energy
+
+    emax : float
+        The maximum energy
+
+    epsilon : float
+        The threshold energy difference between bands
+
+    Returns
+    -------
+    Axis : The axis used to plot the grid
+    """
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+
+    resp = get_3d_intersects_points(gridname, emin, emax, epsilon, plotrange, include_conduction)
+    (xdata, ydata, zdata) = resp.get_points()
+    L_colors = resp.get_colors()
 
     # plot_brillouin_zone(ax)
     plot_symmetry_points(ax)

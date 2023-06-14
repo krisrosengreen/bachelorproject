@@ -6,6 +6,20 @@ import matplotlib.pyplot as plt
 FORMATTING_DECIMALS = 4
 
 
+class IntersectsResponse():
+    def __init__(self, xs, ys, zs, L_colors):
+        self.xs = xs
+        self.ys = ys
+        self.zs = zs
+        self.colors = L_colors
+
+    def get_points(self):
+        return (self.xs, self.ys, self.zs)
+
+    def get_colors(self):
+        return self.colors
+
+
 class PlottingRange():
     """
     Class used to define ranges wherein values should be plotted
