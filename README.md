@@ -1,6 +1,10 @@
 # Bachelor's Project
 Simulation of topological nodal lines in silicon using Python and Quantum Espresso
 
+# Requirements
+
+To use this software you must first install [Quantum Espresso](https://www.quantum-espresso.org/).
+
 # How it works
 
 Create band structure with given k-points
